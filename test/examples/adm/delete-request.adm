@@ -1,0 +1,11 @@
+Model: Data Security
+  @success
+  Attack: Force deletion of sensitive and critical data
+  When frontend requests for a deletion of records
+  Then that data is deleted without leaving any traces
+  Defense: Delete requests should only disable a record, not delete it
+    Given table schema has a 'status' column 
+    And 'active' and 'disabled' are valid values for 'status' column
+    When frontend requests for a deletion of records
+    Then set the 'status' field of that record to 'disabled'
+  # Instead of delete operation, have a column that indicates if a row is 'active' or 'disabled'

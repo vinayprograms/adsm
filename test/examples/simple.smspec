@@ -1,0 +1,107 @@
+# yaml-language-server: $schema=../../schemas/model-schema.json
+
+---
+design-document: "AnInvalidPath.md"
+title: Simple Design
+addb: ~/addb
+
+externals:
+  - id: user
+    type: human
+    name: Regular User
+    description: A person interacting with the system. Only has basic access-rights to the system.
+    interface: user-browser
+  - id: admin
+    type: human
+    name: Administrator
+    description: Administrator of the system. Controls system's configuration and operations.
+    interface: admin-browser
+
+entities:
+  - id: user-browser
+    type: program
+    name: User's web-browser
+    description: Stock web-browser running on user's device.
+    roles: [add-record, modify-record, read-record]
+    adm: [adm/ui.adm]
+  - id: admin-browser
+    type: program
+    name: Administrator's web-browser
+    description: Stock web-browser running on administrator's device.
+    roles: [add-record, modify-record, read-record, delete-record]
+    adm: ["adm/ui.adm"]
+  - { id: add-record, type: role, name: Rights to add a record, description: Role that limits access to adding a record only., adm: ["adm/add-record.adm"] }
+  - { id: modify-record, type: role, name: Rights to modify a record, description: "Role that limits access to modifying a record only.", adm: ["adm/modify-record.adm"] }
+  - { id: read-record, type: role,  name: Rights to read a record, description: "Role that limits access to reading a record only.", adm: ["adm/read-record.adm"] }
+  - { id: delete-record, type: role,  name: Rights to delete a record, description: "Role that limits access to deleting a record only.", adm: ["adm/delete-record.adm"] }
+  - id: frontend
+    type: program
+    name: Web UI
+    description: A Web UI with which both administrators and regular users interact.
+    repo: nil
+    languages: [go]
+    adm: ["adm/frontend.adm"]
+  - id: backend
+    type: program
+    name: Business logic
+    description: Server that processes all requests
+    repo: nil
+    languages: [go]
+    adm: ["adm/backend.adm"]
+  - id: db
+    type: program
+    name: Database
+    description: Database used by business-logic to persist important data
+    repo: nil
+    languages: [sql]
+    adm: ["adm/db.adm"]
+flows:
+  - id: user-interaction
+    name: User interaction
+    description: User's interactions with their browser
+    sender: user
+    receiver: user-browser
+    adm: null
+  - id: admin-interaction
+    name: Admin. interaction
+    description: Admin's interactions with their browser
+    sender: admin
+    receiver: admin-browser
+    adm: null
+  - id: user-request
+    name: User's Requests
+    description: Requests sent from user's browser to frontend
+    sender: user-browser
+    receiver: frontend
+    protocol:   # We are specifying a stack here.
+        - http
+        - tls
+        - tcp
+        - ip
+    adm: null
+  - id: admin-request
+    name: Admin's Requests
+    description: Requests sent from admin's browser to frontend
+    sender: admin-browser
+    receiver: frontend
+    protocol:   # We are specifying a stack here.
+        - http
+        - tls
+        - tcp
+        - ip
+    adm: null
+  - id: process-requests
+    name: Process requests
+    description: System processes user request
+    sender: frontend
+    receiver: backend
+    protocol: [https] # Instead of stack, we refer to the https flow spec, which internally specifies the rest of its stack.
+    adm: ["adm/add-request.adm", "adm/update-request.adm", "adm/delete-request.adm", "adm/read-request.adm"]
+  - id: upsert-user-data
+    name: Insert or update data
+    description: Update or Insert user data. User may imply regular user or administrator. 
+    sender: backend
+    receiver: db
+    protocol: [sql-flow] # Predefined SQL flow specification
+    adm: ["adm/add-db.adm", "adm/update-db.adm", "adm/delete-db.adm", "adm/read-db.adm"]
+...

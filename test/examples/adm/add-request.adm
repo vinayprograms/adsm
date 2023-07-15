@@ -1,0 +1,5 @@
+Model: Request service to add a new user
+  Attack: SQL Injection via request parameters
+
+  Policy: Input sanitization
+    Defense: Sanitize SQL content from request parameters

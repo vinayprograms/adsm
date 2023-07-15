@@ -1,0 +1,12 @@
+Model: Client side attacks
+  @success
+  Attack: Inject javascript into client webpage
+    Given webpage has string fields
+    When javascript code is entered as string into these fields
+    Then strings get executed javascript code
+  Defense: Sanitize all UI input fields
+    Given webpage has string fields
+    When javascript code is entered as string into these fields
+    Then strings are put through a sanitizer
+    And harmful symbols are replaced with escape sequences
+  Defense: Sanitize all URL query fields 

@@ -1,0 +1,5 @@
+Model: Add record to Database
+  Attack: SQL Injection during 'insert' operation
+
+  Policy: Input sanitization
+    Defense: Sanitize SQL content before building query

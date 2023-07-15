@@ -1,0 +1,5 @@
+Model: Database Security
+  Attack: SQL queries are run with db-admin privileges
+
+  Policy: Database Security Policies
+    Defense: Use operation-specific (add, read, update) accounts when performing db operations

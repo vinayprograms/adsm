@@ -1,0 +1,3 @@
+Model: Security of business logic
+  Attack: Service runs with elevated privileges on host
+  Defense: Setup container or VM hosting service with minimum rights

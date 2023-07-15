@@ -1,0 +1,3 @@
+Model: Records management
+  Attack: Unauthorized modification of table
+  Defense: Restrict the tables accessible by a each db account to a small subset

@@ -1,0 +1,5 @@
+Model: Database Security related to breaches
+  Attack: Unauthorized access to Database
+  Attack: Bulk download database records
+  Defense: For non-read operations, use accounts that don't have read rights
+  Defense: Monitor DB traffic and block large reads from DB

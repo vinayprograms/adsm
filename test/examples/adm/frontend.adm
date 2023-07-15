@@ -1,0 +1,5 @@
+Model: Frontend security
+  Assumption: DoS Protection
+    Given rate limiting exists
+    And honeypots exist to handle excessive malicious requests
+  Attack: Unauthorized requests

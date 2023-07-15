@@ -1,0 +1,169 @@
+{
+    "id": "model-schema",
+    "title": "Security Model Specification",
+    "description": "YAML schema for specifying a security model. Utilizes attack/defense modeling as a means to capture security analysis. Security model items are grouped into externals, entities and flows that capture all the interacting components of the system.",
+    "type": "object",
+    "properties": {
+        "title": {
+            "description": "Title for the security model.",
+            "type": "string"                    
+        },
+        "design-document": {
+            "description": "Path to the design document containing information about all the model items.",
+            "type": ["string","null"]
+        },
+        "addb": {
+            "description": "URL of attack-defense database. Model items under 'base' or 'components' are looked up if not defined in this model. ADM files that reference attacks/defenses from ADDB will also be sourced from this location.",
+            "type": "string"
+        },
+        "adm": {
+            "description": "Attacks and defenses spanning the entire model. You can capture kill-chains and mitigation-chains here.",
+            "type":["array","string", "null"],
+            "items": {
+                "type":"string",
+                "pattern": "^.*\\.adm$"
+            },
+            "pattern": "^.*\\.adm$"
+        },
+        "externals": {
+            "description": "List of entities external to this model. They interact with the system captured in this model. Analysis of externals is out-of-scope for this model. Behaviour of external entities cannot be controlled.",
+            "type":"array",
+            "uniqueItems": true,
+            "items":{
+                "oneOf": [
+                    {"$ref":"#/sub-schemas/externals/human"},
+                    {"$ref":"#/sub-schemas/externals/program"}
+                ]
+            }
+        },
+        "entities": {
+            "description": "List of entities participating in this model. These entities must map to those discussed in the design document.",
+            "type":"array",
+            "uniqueItems": true,
+            "items":{
+                "oneOf": [
+                    {"$ref":"#/sub-schemas/entities/human"},
+                    {"$ref":"#/sub-schemas/entities/role"},
+                    {"$ref":"#/sub-schemas/entities/program"}
+                ]
+            }
+        },
+        "flows": {
+            "description": "List of data flows between participating entities (including external ones).",
+            "type":"array",
+            "uniqueItems": true,
+            "items": {"$ref":"#/sub-schemas/flow"}
+        }
+    },
+    "required": ["title", "externals", "entities", "flows"],
+    "additionalProperties":false,
+    "sub-schemas": {
+        "externals": {
+            "human": {
+                "description": "A human user (external) interacting with the system",
+                "type":"object",
+                "properties": {
+                    "id": {"$ref": "component-schema.json#/options/human/properties/id"},
+                    "type": {"$ref": "component-schema.json#/options/human/properties/type"},
+                    "name": {"$ref": "component-schema.json#/options/human/properties/name"},
+                    "description": {"$ref": "component-schema.json#/options/human/properties/description"},
+                    "interface": {"$ref": "component-schema.json#/options/human/properties/interface"}
+                },
+                "required": ["id", "type", "name", "description"],
+                "additionalProperties":false
+            },
+            "program": {
+                "description": "A program (external) interacting with the system",
+                "type":"object",
+                "properties": {
+                    "id": {"$ref": "component-schema.json#/options/program/properties/id"},
+                    "type": {"$ref": "component-schema.json#/options/program/properties/type"},
+                    "name": {"$ref": "component-schema.json#/options/program/properties/name"},
+                    "description": {"$ref": "component-schema.json#/options/program/properties/description"},
+                    "icon": {"$ref": "component-schema.json#/options/program/properties/icon"},
+                    "roles": {"$ref": "component-schema.json#/options/program/properties/roles"}
+                },
+                "required": ["id", "type", "name", "description"],
+                "additionalProperties":false
+            }
+        },
+        "entities": {
+            "human": {
+                "description": "A human who is part of the system",
+                "type":"object",
+                "properties": {
+                    "id": {"$ref": "component-schema.json#/options/human/properties/id"},
+                    "type": {"$ref": "component-schema.json#/options/human/properties/type"},
+                    "name": {"$ref": "component-schema.json#/options/human/properties/name"},
+                    "description": {"$ref": "component-schema.json#/options/human/properties/description"},
+                    "base": {"$ref": "component-schema.json#/options/human/properties/base"},
+                    "interface": {"$ref": "component-schema.json#/options/human/properties/interface"},
+                    "mitigations": {"$ref": "component-schema.json#/options/human/properties/mitigations"},
+                    "recommendations": {"$ref": "component-schema.json#/options/human/properties/recommendations"},
+                    "adm": {"$ref": "component-schema.json#/options/human/properties/adm"}
+                },
+                "additionalProperties":false,
+                "required": ["id", "type", "name", "description", "adm"]
+            },
+            "program": {
+                "description": "A program that is part of the system",
+                "type":"object",
+                "properties": {
+                    "id": {"$ref": "component-schema.json#/options/program/properties/id"},
+                    "type": {"$ref": "component-schema.json#/options/program/properties/type"},
+                    "name": {"$ref": "component-schema.json#/options/program/properties/name"},
+                    "description": {"$ref": "component-schema.json#/options/program/properties/description"},
+                    "repo": {"$ref": "component-schema.json#/options/program/properties/repo"},
+                    "icon": {"$ref": "component-schema.json#/options/program/properties/icon"},
+                    "base": {"$ref": "component-schema.json#/options/program/properties/base"},
+                    "languages": {"$ref": "component-schema.json#/options/program/properties/languages"},
+                    "dependencies": {"$ref": "component-schema.json#/options/program/properties/dependencies"},
+                    "roles": {"$ref": "component-schema.json#/options/program/properties/roles"},
+                    "mitigations": {"$ref": "component-schema.json#/options/program/properties/mitigations"},
+                    "recommendations": {"$ref": "component-schema.json#/options/program/properties/recommendations"},
+                    "adm": {"$ref": "component-schema.json#/options/program/properties/adm"}
+                },
+                "additionalProperties":false,
+                "required":["id", "type", "name", "description", "adm"]
+            },
+            "role": {
+                "description": "Role played by an entity when interacting with others.",
+                "type":"object",
+                "properties": {
+                    "id": {"$ref": "component-schema.json#/options/role/properties/id"},
+                    "type": {"$ref": "component-schema.json#/options/role/properties/type"},
+                    "name": {"$ref": "component-schema.json#/options/role/properties/name"},
+                    "description": {"$ref": "component-schema.json#/options/role/properties/description"},
+                    "mitigations": {"$ref": "component-schema.json#/options/role/properties/mitigations"},
+                    "recommendations": {"$ref": "component-schema.json#/options/role/properties/recommendations"},
+                    "adm": {"$ref": "component-schema.json#/options/role/properties/adm"}
+                },
+                "additionalProperties":false,
+                "required": ["id", "type", "name", "description", "adm"]
+            }
+        },
+        "flow": {
+            "description": "A data flow between two entities",
+            "type":"object",
+            "properties": {
+                "id": {"$ref": "component-schema.json#/options/flow/properties/id"},
+                "description": {"$ref": "component-schema.json#/options/flow/properties/description"},
+                "name": {"$ref": "component-schema.json#/options/flow/properties/name"},
+                "sender": {
+                    "description": "Entity/Human initiating this flow",
+                    "type":"string"
+                },
+                "receiver": {
+                    "description": "Entity/Human that is the target of this flow",
+                    "type":"string"
+                },
+                "protocol": {"$ref": "component-schema.json#/options/flow/properties/protocol"},
+                "mitigations": {"$ref": "component-schema.json#/options/flow/properties/mitigations"},
+                "recommendations": {"$ref": "component-schema.json#/options/flow/properties/recommendations"},
+                "adm":{"$ref": "component-schema.json#/options/flow/properties/adm"}
+            },
+            "additionalProperties":false,
+            "required":["id", "name", "description", "sender", "receiver", "adm"]
+        }
+    }
+}

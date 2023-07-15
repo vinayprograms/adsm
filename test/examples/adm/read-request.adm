@@ -1,0 +1,3 @@
+Model: Client data requests
+  Attack: Trigger DoS by flooding frontend with read-requests
+  Defense: Use rate limiting to control resource utilization per request

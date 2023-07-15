@@ -1,0 +1,250 @@
+{
+    "id": "component-schema",
+    "title": "Component Security Specification",
+    "anyOf": [
+        {"$ref":"#/options/human"},
+        {"$ref":"#/options/role"},
+        {"$ref":"#/options/program"},
+        {"$ref":"#/options/flow"}
+    ],
+    "options": {
+        "human": {
+            "description": "Specification about a human",
+            "type":"object",
+            "properties": {
+                "id": {
+                    "description": "Unique identifier for this human.",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "Type of entity is 'human'",
+                    "type": "string",
+                    "enum": ["human"]
+                },
+                "name": {
+                    "description": "A short title for this human",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Short description about this human",
+                    "type": "string"
+                },
+                "base": {
+                    "description": "Base human specifications from which additional properties are inherited. You can inherit more than one base for this human.",
+                    "type":["array", "null"],
+                    "items": {
+                        "type":"string"
+                    }
+                },
+                "interface": {
+                    "description": "Program used by the human to interact with the system (for example, a browser).",
+                    "type":"string"
+                },
+                "mitigations": {
+                    "description": "A freeform, adhoc list of security mitigations currently implemented by this human.",
+                    "type":"array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "recommendations": {
+                    "description": "A freeform, adhoc list of security recommendations for this human. NOTE: Use this only when a formal set of attacks and defenses cannot be defined for this human.",
+                    "type":"array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "adm":{
+                    "description":"List of attack/defense specifications for this human. Attacks are directed towards the human and defenses are mitigations employed by the human to deal with attacks.\n\nEach item in the list can be text containing attacks and defenses or an '.adm' file. In case of files, they must exist in the same path as this specification.",
+                    "type":["array","string", "null"],
+                    "items": {
+                        "type":"string",
+                        "pattern": "^.*\\.adm$"
+                    },
+                    "pattern": "^.*\\.adm$"
+                }
+            },
+            "required":["id", "type", "name", "description", "adm"],
+            "additionalProperties": false
+            
+        },
+        "role": {
+            "description": "Specification about a role",
+            "type":"object",
+            "properties": {
+                "id": {
+                    "description": "Unique identifier for this role.",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "Type of entity is 'role'",
+                    "type": "string",
+                    "enum": ["role"]
+                },
+                "name": {
+                    "description": "A short title for this human",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Short description about this role",
+                    "type": "string"
+                },
+                "recommendations": {
+                    "description": "A freeform, adhoc list of security recommendations for this role. NOTE: Use this only when a formal set of attacks and defenses cannot be defined for this role.",
+                    "type":"array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "mitigations": {
+                    "description": "A freeform, adhoc list of security mitigations currently implemented by this role.",
+                    "type":"array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "adm":{
+                    "description":"List of attack/defense specifications for this role. Attacks are directed towards this role and defenses are controls implemented for this role to block/mitigate attacks.  If you are grouping attacks/defenses into STRIDE categories, all 6 categories are applicable for this role.\n\nEach item in the list must be a well-formed path to an '.adm' file. It is recommended that ADM files are stored in the same directory as this file or in a sub-directory.",
+                    "type":["array","string", "null"],
+                    "items": {
+                        "type":"string",
+                        "pattern": "^.*\\.adm$"
+                    },
+                    "pattern": "^.*\\.adm$"
+                }
+            },
+            "additionalProperties": false,
+            "required":["id", "type", "name", "description", "adm"]
+        },
+        "program": {
+            "description": "Specification about a program",
+            "type":"object",
+            "properties": {
+                "id": {
+                    "description": "Unique identifier for this program.",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "Type of entity is 'program'",
+                    "type": "string",
+                    "enum": ["program", "system"]
+                },
+                "name": {
+                    "description": "A short title for this human",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Short description about this entity",
+                    "type": "string"
+                },
+                "repo": {
+                    "description": "Path to the code repository of this program", 
+                    "type":["string","null"]
+                },
+                "icon": {
+                    "description": "Image used to represent this entity.",
+                    "type": "string"
+                },
+                "base": {
+                    "description": "Base entity specifications from which additional properties are inherited. You can inherit more than one base for this program.",
+                    "type":["array", "null"],
+                    "items": {
+                        "type":"string"
+                    }
+                },
+                "languages": {
+                    "description": "Programming language(s) this entity is written in.", 
+                    "type":["array","null"]
+                },
+                "dependencies": {
+                    "description": "Packages/Libraries imported-by/included-in this program.",
+                    "type":["array","null"]
+                },
+                "roles": {
+                    "description": "Access-control roles played by this program when interacting with other programs/systems. Each role is a separate specification defined in this model.",
+                    "type":["array","null"],
+                    "items": {
+                        "type":"string"
+                    }
+                },
+                "mitigations": {
+                    "description": "A freeform, adhoc list of security mitigations currently implemented by this program.",
+                    "type":"array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "recommendations": {
+                    "description": "A freeform, adhoc list of security recommendations for this entity.",
+                    "type":"array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "adm":{
+                    "description":"List of attack/defense specifications for this program. Attacks are directed towards this entity and defenses are controls implemented in the entity to block/mitigate attacks.  If you are grouping attacks/defenses into STRIDE categories, all 6 categories are applicable for a program.\n\nEach item in the list must be a well-formed path to an '.adm' file. It is recommended that ADM files are stored in the same directory as this file or in a sub-directory.",
+                    "type":["array","string", "null"],
+                    "items": {
+                        "type":"string",
+                        "pattern": "^.*\\.adm$"
+                    },
+                    "pattern": "^.*\\.adm$"
+                }
+            },
+            "additionalProperties": false,
+            "required":["id", "type", "name", "description", "adm"]
+        },
+        "flow": {
+            "description": "A flow connecting humans/entities",
+            "type":"object",
+            "properties": {
+                "id": {
+                    "description": "Unique identifier for this flow.",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "This specification is about a flow",
+                    "type": "string",
+                    "enum": ["flow"]
+                },
+                "name": {
+                    "description": "A short title for this human",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Short description about this flow",
+                    "type": "string"
+                },
+                "protocol": {
+                    "description": "Communication protocol stack used in this flow. A single entry indicates the underlying protocol used in the flow. A list of protocol implies a protocol stack. In case of stack, please order them from top (application layer) to bottom (physical-layer). In the stack, only include those that make sense for this specification.",
+                    "type": "array"
+                },
+                "mitigations": {
+                    "description": "A freeform, adhoc list of security mitigations currently implemented by this flow.",
+                    "type":"array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "recommendations": {
+                    "description": "A freeform, adhoc list of security recommendations for this flow. NOTE: Use this only when a formal set of attacks and defenses cannot be defined for this flow.",
+                    "type":"array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "adm":{
+                    "description":"List of attack/defense specifications for this flow. Attacks are directed towards this flow and defenses are controls implemented by the flow (typically in the protocol) to mitigate attacks. If you are grouping attacks/defenses into STRIDE categories, only 'Tampering', 'Info. Disclosure' and 'Denial of Service' are applicable.\n\nEach item in the list must be a well-formed path to an '.adm' file. It is recommended that ADM files are stored in the same directory as this file or in a sub-directory.",
+                    "type":["array","string", "null"],
+                    "items": {
+                        "type":"string",
+                        "pattern": "^.*\\.adm$"
+                    },
+                    "pattern": "^.*\\.adm$"
+                }
+            },
+            "additionalProperties": false,
+            "required":["id", "type", "name", "description", "adm"]
+        }
+    }
+}

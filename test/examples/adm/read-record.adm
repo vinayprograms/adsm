@@ -1,0 +1,3 @@
+Model: Records access
+  Attack: Request for bulk user data
+  Defense: Design service to block bulk records requests

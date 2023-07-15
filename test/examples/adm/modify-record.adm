@@ -1,0 +1,3 @@
+Model: Records management
+  Attack: Unauthorized modification of data
+  Defense: Verify session token before processing modification requests

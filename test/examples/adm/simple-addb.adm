@@ -1,0 +1,39 @@
+Model: System risks
+
+  As an attacker
+  I want to control the server-side components
+  So that I can profit from the data breach
+  And use them to launch further attacks
+
+  As a defender
+  I want to secure server-side components
+  So that the product can serve our customers
+  And maintain customer trust in the product
+
+  Attack: SQL injection
+    Given Backend uses input directly to build SQL queries
+    When String input fields at the frontend contains SQL queries
+    And Backend executes those queries
+    Then Backend leaks data to browser clients
+
+  Defense: Input sanitization
+    Given Backend uses input directly to build SQL queries
+    When String input fields at the frontend contains SQL queries
+    Then Backend replaces symbols with their escape sequences
+
+  # incident response
+  Defense: Log leaks
+    Given Backend uses input directly to build SQL queries
+    When Backend leaks data to browser clients
+    Then Setup logs to detect SQL content in response messages
+
+  @success
+  Attack: TLS cipher problems
+    Given Exploit insecure TLS ciphers
+    And Client sends sensitive data
+    When client requests are intercepted
+    Then requests can be decrypted to reveal sensitive data
+
+  Defense: Strengthen TLS configuration
+    # The precondition below is from tls.adm in addb
+    Given Turn off insecure ciphers
