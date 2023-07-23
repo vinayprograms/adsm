@@ -7,8 +7,8 @@ import (
 	"libadm/graphviz"
 	admloaders "libadm/loaders"
 	admmodel "libadm/model"
-	smloaders "libsm/loaders"
 	"os"
+	smloaders "securitymodel/loaders"
 	"testing"
 
 	"github.com/stretchr/testify/assert"

@@ -10,7 +10,7 @@ BIN_DIR:=./bin
 SRC_DIR:=./src
 ROOT_DIR:=$(shell dirname $(MAKEFILE_LIST) | xargs)
 TEST_PATH := $(shell sed -e 's/ /\\\ /g' <<< "$(ROOT_DIR)/test")
-TEST_PACKAGES := "args,libsm/loaders,libsm/yamlmodel,libsm/objmodel,libsm/diagram"
+TEST_PACKAGES := "args,securitymodel/loaders,securitymodel/yamlmodel,securitymodel/objmodel,securitymodel/diagram"
 
 help: # Show this help
 	@egrep -h '\s#\s' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?# "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'

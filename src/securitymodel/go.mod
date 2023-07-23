@@ -1,22 +1,22 @@
-module libsm
+module securitymodel
 
 go 1.19
 
-replace libaddb => ../libaddb
+replace addb => ../addb
 
 replace libadm => ../../../adm/src/libadm
 
-replace libsm/addb => ./addb
+replace securitymodel/addb => ./addb
 
-replace libsm/loaders => ./loaders
+replace securitymodel/loaders => ./loaders
 
-replace libsm/yamlmodel => ./yamlmodel
+replace securitymodel/yamlmodel => ./yamlmodel
 
-replace libsm/objmodel => ./objmodel
+replace securitymodel/objmodel => ./objmodel
 
 require gopkg.in/yaml.v3 v3.0.1 // direct
 
-require libaddb v0.0.0-00010101000000-000000000000
+require addb v0.0.0-00010101000000-000000000000
 
 require (
 	github.com/cucumber/gherkin-go/v19 v19.0.3 // indirect

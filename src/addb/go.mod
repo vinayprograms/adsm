@@ -1,4 +1,4 @@
-module libaddb
+module addb
 
 go 1.18
 

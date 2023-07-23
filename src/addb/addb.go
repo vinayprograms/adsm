@@ -1,4 +1,4 @@
-package libaddb
+package addb
 
 import (
 	"bytes"
@@ -15,23 +15,25 @@ import (
 
 type ADDB struct {
 	Location string
-	index map[string]*ADDBComponent
+	index    map[string]*ADDBComponent
 }
 
 func (db *ADDB) Init(addb_path string) error {
 	if strings.HasPrefix(addb_path, "~") { // If path is relative to home directory
 		home, err := os.UserHomeDir()
-		if err != nil { return err}
+		if err != nil {
+			return err
+		}
 		addb_path = home + strings.TrimPrefix(addb_path, "~")
 	}
 	addb_path = strings.TrimSuffix(addb_path, "/") // Remove trailing slash
 
 	if _, err := os.Stat(addb_path); os.IsNotExist(err) {
 		return errors.New("invalid ADDB path or directory not present")
-	}	
+	}
 	db.Location = addb_path
 
-  err := db.buildindex()
+	err := db.buildindex()
 	if err != nil {
 		return err
 	}
@@ -47,50 +49,54 @@ func (db *ADDB) GetComponent(id string) (*ADDBComponent, error) {
 	}
 
 	return entry, nil
-/*
-	id = strings.TrimPrefix(id, "addb.") // remove "addb." from the path, if present
-	id = strings.Replace(id, ".", "/", -1) // replace dots with slashes
-	tempPath := db.Location + "/" + id + ".smspec"
-	if _, err := os.Stat(tempPath); os.IsNotExist(err) {
-		return nil, err
-	}	
-	content, err := os.ReadFile(tempPath)
-	if err != nil {
-		return nil, err
-	}
+	/*
+		id = strings.TrimPrefix(id, "addb.") // remove "addb." from the path, if present
+		id = strings.Replace(id, ".", "/", -1) // replace dots with slashes
+		tempPath := db.Location + "/" + id + ".smspec"
+		if _, err := os.Stat(tempPath); os.IsNotExist(err) {
+			return nil, err
+		}
+		content, err := os.ReadFile(tempPath)
+		if err != nil {
+			return nil, err
+		}
 
-	var addb_component ADDBComponent
-	err = yaml.Unmarshal(content, &addb_component)
-	if err != nil {
-		return nil, err
-	}
-	parts := strings.Split(id, "/")
-	addb_component.Name = parts[len(parts) - 1]
+		var addb_component ADDBComponent
+		err = yaml.Unmarshal(content, &addb_component)
+		if err != nil {
+			return nil, err
+		}
+		parts := strings.Split(id, "/")
+		addb_component.Name = parts[len(parts) - 1]
 
-	// update adm path 
-	var newPaths []string
-	for _, adm_path := range addb_component.ADM {
-		newPath := db.Location + "/" + id + "/" + adm_path
-		newPaths = append(newPaths, newPath)
-	}
-	addb_component.ADM = newPaths
+		// update adm path
+		var newPaths []string
+		for _, adm_path := range addb_component.ADM {
+			newPath := db.Location + "/" + id + "/" + adm_path
+			newPaths = append(newPaths, newPath)
+		}
+		addb_component.ADM = newPaths
 
-	switch (addb_component.Type) {
-	case "human", "program", "system", "flow":
-		return &addb_component, nil
-	default:
-		return nil, errors.New("unknown component type - " + string(addb_component.Type))
-	}*/;
+		switch (addb_component.Type) {
+		case "human", "program", "system", "flow":
+			return &addb_component, nil
+		default:
+			return nil, errors.New("unknown component type - " + string(addb_component.Type))
+		}*/
 }
 
 ////////////////////////////////////////
 // Internal functions
 
 func (db *ADDB) buildindex() error {
-	if db.index == nil { db.index = make(map[string]*ADDBComponent) }
-	
+	if db.index == nil {
+		db.index = make(map[string]*ADDBComponent)
+	}
+
 	files, err := traverse(db.Location, nil)
-	if err != nil { return err }
+	if err != nil {
+		return err
+	}
 
 	for _, file := range files {
 		content, err := os.ReadFile(file)
@@ -105,12 +111,12 @@ func (db *ADDB) buildindex() error {
 		}
 
 		for _, addb_component := range components {
-			switch (addb_component.Type) {
+			switch addb_component.Type {
 			case "human", "program", "system", "flow":
 				if _, present := db.index[addb_component.Id]; present {
 					return errors.New("Found multiple entries in ADDB for '" + addb_component.Id + "'")
 				}
-				
+
 				// Replace relative paths with absolute paths for ADM files
 				var newPaths []string
 				for _, adm_path := range addb_component.ADM {
@@ -118,9 +124,9 @@ func (db *ADDB) buildindex() error {
 					newPaths = append(newPaths, newPath)
 				}
 				addb_component.ADM = newPaths
-	
+
 				db.index[addb_component.Id] = addb_component
-	
+
 			default:
 				return errors.New("unknown component type - " + string(addb_component.Type))
 			}
@@ -176,7 +182,9 @@ func traverse(path string, ignoreList []string) ([]string, error) {
 			} else if item.Name() == ".gitignore" { // skip everything listed in .gitignore
 				ignore = append(ignore, ".gitignore")
 				content, err := os.ReadFile(path + "/.gitignore")
-				if err != nil { return nil, err }
+				if err != nil {
+					return nil, err
+				}
 				ignoreFiles := string(content)
 				ignore = append(ignore, strings.Split(ignoreFiles, "\n")...)
 			} else { // Only pick files with extension .smspec
@@ -191,7 +199,7 @@ func traverse(path string, ignoreList []string) ([]string, error) {
 						return nil, err
 					}
 					files = append(files, f...)
-				}else if fileExtension != "smspec" {
+				} else if fileExtension != "smspec" {
 					continue
 				} else {
 					files = append(files, path+"/"+item.Name())

@@ -2,24 +2,24 @@ package objmodel
 
 import (
 	"errors"
-	"libsm/yamlmodel"
+	"securitymodel/yamlmodel"
 )
 
 type SecurityModel struct {
-	Title string
+	Title          string
 	DesignDocument string
-	AddbPath string
-	modelADM []string
-	Externals map[string]ExternalSpec
-	Entities map[string]EntitySpec
-	Flows map[string]FlowSpec
+	AddbPath       string
+	modelADM       []string
+	Externals      map[string]ExternalSpec
+	Entities       map[string]EntitySpec
+	Flows          map[string]FlowSpec
 }
 
 // Collect all ADMs from program
 func (t *SecurityModel) GetADM() (allADM map[string][]string) {
 	allADM = make(map[string][]string)
 	allADM["sm"] = t.modelADM
-	
+
 	if t.Entities != nil {
 		for _, e := range t.Entities {
 			if _, ok := e.(*Role); !ok {
@@ -64,28 +64,30 @@ func (t *SecurityModel) Init(ysm *yamlmodel.SecurityModel, r Resolver) []error {
 	}
 
 	// Build SM objects from indexed YAML content
-	buildErrs := t.buildExternalEntities(ysm.Externals, r);	
-	if len(buildErrs) != 0 { 
+	buildErrs := t.buildExternalEntities(ysm.Externals, r)
+	if len(buildErrs) != 0 {
 		errs = append(errs, buildErrs...)
 	}
 	buildErrs = t.buildEntities(ysm.Entities, r)
-	if len(buildErrs) != 0 { 
+	if len(buildErrs) != 0 {
 		errs = append(errs, buildErrs...)
 	}
 	buildErrs = t.buildFlows(ysm.Flows, r)
-	if len(buildErrs) != 0 { 
+	if len(buildErrs) != 0 {
 		errs = append(errs, buildErrs...)
 	}
 
 	return errs
 }
 
-func(t *SecurityModel) buildExternalEntities(externals []*yamlmodel.Entity, r Resolver) []error {
+func (t *SecurityModel) buildExternalEntities(externals []*yamlmodel.Entity, r Resolver) []error {
 	var errs []error
 
 	t.Externals = make(map[string]ExternalSpec)
 	for _, entry := range externals {
-		if entry == nil || entry.Id == "" { continue }
+		if entry == nil || entry.Id == "" {
+			continue
+		}
 		if entry.Type == yamlmodel.Human {
 			obj, extErrs := r(entry.Id)
 			if len(extErrs) != 0 {
@@ -111,12 +113,14 @@ func(t *SecurityModel) buildExternalEntities(externals []*yamlmodel.Entity, r Re
 	return errs
 }
 
-func(t *SecurityModel) buildEntities(entities []*yamlmodel.Entity, r Resolver) []error {
+func (t *SecurityModel) buildEntities(entities []*yamlmodel.Entity, r Resolver) []error {
 	var errs []error
-	
+
 	t.Entities = make(map[string]EntitySpec)
 	for _, entry := range entities {
-		if entry == nil || entry.Id == "" { continue }
+		if entry == nil || entry.Id == "" {
+			continue
+		}
 		switch entry.Type {
 		case yamlmodel.Human:
 			obj, entityErrs := r(entry.Id)
@@ -137,8 +141,8 @@ func(t *SecurityModel) buildEntities(entities []*yamlmodel.Entity, r Resolver) [
 			if !ok {
 				return []error{errors.New("error in creating program - " + entry.Id)}
 			}
-			
- 			t.Entities[p.GetID()] = p
+
+			t.Entities[p.GetID()] = p
 		case yamlmodel.Role:
 			obj, entityErrs := r(entry.Id)
 			if len(entityErrs) != 0 {
@@ -148,19 +152,21 @@ func(t *SecurityModel) buildEntities(entities []*yamlmodel.Entity, r Resolver) [
 			if !ok {
 				return []error{errors.New("error in creating program - " + entry.Id)}
 			}
-			
- 			t.Entities[rol.GetID()] = &rol
+
+			t.Entities[rol.GetID()] = &rol
 		}
 	}
 	return errs
 }
 
-func(t *SecurityModel) buildFlows(flows []*yamlmodel.Flow, r Resolver) []error {
+func (t *SecurityModel) buildFlows(flows []*yamlmodel.Flow, r Resolver) []error {
 	var errs []error
-	
+
 	t.Flows = make(map[string]FlowSpec)
 	for _, entry := range flows {
-		if entry == nil || entry.Id == "" { continue }
+		if entry == nil || entry.Id == "" {
+			continue
+		}
 		obj, flowErrs := r(entry.Id)
 		if len(flowErrs) != 0 {
 			errs = append(errs, flowErrs...)

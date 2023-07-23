@@ -1,8 +1,8 @@
 package test
 
 import (
-	"libsm/objmodel"
-	"libsm/yamlmodel"
+	"securitymodel/objmodel"
+	"securitymodel/yamlmodel"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -11,7 +11,7 @@ import (
 func TestSMWithNullYaml(t *testing.T) {
 	var th TestHarness
 	var sm objmodel.SecurityModel
-	
+
 	err := sm.Init(nil, th.Resolve)
 	assert.NotNil(t, err)
 }
@@ -20,7 +20,7 @@ func TestSMWithEmptyYamlStructure(t *testing.T) {
 	var th TestHarness
 	var ysm yamlmodel.SecurityModel
 	var sm objmodel.SecurityModel
-	
+
 	err := sm.Init(&ysm, th.Resolve)
 	assert.Nil(t, err)
 	assert.Empty(t, sm.Title)
@@ -34,45 +34,45 @@ func TestSMWithEmptyYamlStructure(t *testing.T) {
 func TestSMWithFullModel(t *testing.T) {
 	var th TestHarness
 	th.YamlStructures = make(map[string]interface{})
-	th.YamlStructures["user"] = &yamlmodel.Entity {
-		Id: "user",
-		Type: yamlmodel.Human,
+	th.YamlStructures["user"] = &yamlmodel.Entity{
+		Id:          "user",
+		Type:        yamlmodel.Human,
 		Description: "User interacting with the system",
-		Interface: "user-browser",
-		ADM: []string{"user.adm"},
+		Interface:   "user-browser",
+		ADM:         []string{"user.adm"},
 	}
-	th.YamlStructures["user-browser"] = &yamlmodel.Entity {
-		Id: "user-browser",
-		Type: yamlmodel.Program,
+	th.YamlStructures["user-browser"] = &yamlmodel.Entity{
+		Id:          "user-browser",
+		Type:        yamlmodel.Program,
 		Description: "Interface used by 'user' to talk to system",
-		ADM: []string{"user-browser.adm"},
+		ADM:         []string{"user-browser.adm"},
 	}
-	th.YamlStructures["system"] = &yamlmodel.Entity {
-		Id: "system",
-		Type: yamlmodel.System,
+	th.YamlStructures["system"] = &yamlmodel.Entity{
+		Id:          "system",
+		Type:        yamlmodel.System,
 		Description: "System under consideration",
-		Base: []string{"server"},
-		ADM: []string{"system.adm"},
+		Base:        []string{"server"},
+		ADM:         []string{"system.adm"},
 	}
-	th.YamlStructures["interaction"] = &yamlmodel.Flow {
-		Id: "interaction",
-		Sender: "user",
-		Receiver: "system",
+	th.YamlStructures["interaction"] = &yamlmodel.Flow{
+		Id:          "interaction",
+		Sender:      "user",
+		Receiver:    "system",
 		Description: "User interacting with the system",
-		Protocol: []string{"manual"},
-		ADM: []string{"interaction.adm"},
+		Protocol:    []string{"manual"},
+		ADM:         []string{"interaction.adm"},
 	}
 	var sm objmodel.SecurityModel
-	ysm := yamlmodel.SecurityModel {
+	ysm := yamlmodel.SecurityModel{
 		Title: "Simple security model",
-		Externals: []*yamlmodel.Entity {
+		Externals: []*yamlmodel.Entity{
 			th.YamlStructures["user"].(*yamlmodel.Entity),
 			th.YamlStructures["user-browser"].(*yamlmodel.Entity),
 		},
-		Entities: []*yamlmodel.Entity {th.YamlStructures["system"].(*yamlmodel.Entity)},
-		Flows: []*yamlmodel.Flow {th.YamlStructures["interaction"].(*yamlmodel.Flow)},
+		Entities: []*yamlmodel.Entity{th.YamlStructures["system"].(*yamlmodel.Entity)},
+		Flows:    []*yamlmodel.Flow{th.YamlStructures["interaction"].(*yamlmodel.Flow)},
 	}
-	
+
 	errs := sm.Init(&ysm, th.Resolve)
 	assert.GreaterOrEqual(t, len(errs), 1) // 'server' and 'manual' cannot be resolved.
 }
@@ -80,38 +80,38 @@ func TestSMWithFullModel(t *testing.T) {
 func TestSMWithSocialEnggModel(t *testing.T) {
 	var th TestHarness
 	th.YamlStructures = make(map[string]interface{})
-	th.YamlStructures["adam"] = &yamlmodel.Entity {
-		Id: "adam",
-		Type: yamlmodel.Human,
+	th.YamlStructures["adam"] = &yamlmodel.Entity{
+		Id:          "adam",
+		Type:        yamlmodel.Human,
 		Description: "Adam is the target of social-engineering attacks",
-		ADM: []string{"adam.adm"},
+		ADM:         []string{"adam.adm"},
 	}
-	th.YamlStructures["bob"] = &yamlmodel.Entity {
-		Id: "bob",
-		Type: yamlmodel.Human,
+	th.YamlStructures["bob"] = &yamlmodel.Entity{
+		Id:          "bob",
+		Type:        yamlmodel.Human,
 		Description: "Bob is the attacker",
-		Base: []string{"crook"},
-		ADM: []string{"bob.adm"},
+		Base:        []string{"crook"},
+		ADM:         []string{"bob.adm"},
 	}
-	th.YamlStructures["soceng-attack"] = &yamlmodel.Flow {
-		Id: "soceng-attack",
-		Sender: "Bob",
-		Receiver: "Adam",
+	th.YamlStructures["soceng-attack"] = &yamlmodel.Flow{
+		Id:          "soceng-attack",
+		Sender:      "Bob",
+		Receiver:    "Adam",
 		Description: "Bob social-engineers Adam to reveal his bank credentials",
-		Protocol: []string{"manual"},
-		ADM: []string{"soceng-creds.adm"},
+		Protocol:    []string{"manual"},
+		ADM:         []string{"soceng-creds.adm"},
 	}
 	var sm objmodel.SecurityModel
-	ysm := yamlmodel.SecurityModel {
-		Title: "Simple security model",
+	ysm := yamlmodel.SecurityModel{
+		Title:     "Simple security model",
 		Externals: nil,
-		Entities: []*yamlmodel.Entity {
+		Entities: []*yamlmodel.Entity{
 			th.YamlStructures["adam"].(*yamlmodel.Entity),
 			th.YamlStructures["bob"].(*yamlmodel.Entity),
 		},
-		Flows: []*yamlmodel.Flow {th.YamlStructures["soceng-attack"].(*yamlmodel.Flow)},
+		Flows: []*yamlmodel.Flow{th.YamlStructures["soceng-attack"].(*yamlmodel.Flow)},
 	}
-	
+
 	errs := sm.Init(&ysm, th.Resolve)
 	assert.GreaterOrEqual(t, len(errs), 1) // 'crook' and 'manual' cannot be resolved.
 }
@@ -120,7 +120,7 @@ func TestManualADMAddition(t *testing.T) {
 	var th TestHarness
 	var ysm yamlmodel.SecurityModel
 	var sm objmodel.SecurityModel
-	
+
 	err := sm.Init(&ysm, th.Resolve)
 	assert.Nil(t, err)
 	sm.SetADM([]string{"waste.adm", "pointless.adm"})

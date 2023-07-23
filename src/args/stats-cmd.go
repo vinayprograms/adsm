@@ -2,8 +2,8 @@ package args
 
 import (
 	"fmt"
-	"libsm/objmodel"
 	"os"
+	"securitymodel/objmodel"
 
 	admloaders "libadm/loaders"
 	admmodel "libadm/model"
@@ -38,8 +38,8 @@ func (e externalStatsCommand) execute() error {
 
 func (e entityStatsCommand) execute() error {
 	for _, ent := range e.model.Entities {
-		_, ok1 := ent.(*objmodel.Human); 
-		_, ok2 := ent.(*objmodel.Program); 
+		_, ok1 := ent.(*objmodel.Human)
+		_, ok2 := ent.(*objmodel.Program)
 		if !(ok1 || ok2) {
 			continue
 		}
@@ -83,8 +83,8 @@ func (f flowStatsCommand) execute() error {
 		for _, adm := range flo.GetADM() {
 			for _, admFilePath := range adm {
 				line := printADMStatLine(admFilePath)
-				if line != "" { 
-					fmt.Println("\t      " + line) 
+				if line != "" {
+					fmt.Println("\t      " + line)
 				}
 			}
 		}
@@ -94,7 +94,7 @@ func (f flowStatsCommand) execute() error {
 
 func printADMStatLine(file string) (line string) {
 	content, err := os.ReadFile(file)
-	if err == nil{
+	if err == nil {
 		gherkinModel, err1 := admloaders.LoadGherkinContent(string(content))
 		if err1 != nil {
 			fmt.Println(err1)
@@ -103,10 +103,18 @@ func printADMStatLine(file string) (line string) {
 		err2 := m.Init(gherkinModel.Feature)
 		if err2 == nil {
 			line += "ADM: " + file
-			if len(m.Assumptions) > 0 { line += ", ASSUMPTIONS:" + fmt.Sprint(len(m.Assumptions)) }
-			if len(m.Attacks) > 0 { line += ", ATTACKS:" + fmt.Sprint(len(m.Attacks)) }
-			if len(m.Defenses) > 0 { line += ", DEFENSES:" + fmt.Sprint(len(m.Defenses)) }
-			if len(m.Policies) > 0 { line += ", POLICIES:" + fmt.Sprint(len(m.Policies)) }
+			if len(m.Assumptions) > 0 {
+				line += ", ASSUMPTIONS:" + fmt.Sprint(len(m.Assumptions))
+			}
+			if len(m.Attacks) > 0 {
+				line += ", ATTACKS:" + fmt.Sprint(len(m.Attacks))
+			}
+			if len(m.Defenses) > 0 {
+				line += ", DEFENSES:" + fmt.Sprint(len(m.Defenses))
+			}
+			if len(m.Policies) > 0 {
+				line += ", POLICIES:" + fmt.Sprint(len(m.Policies))
+			}
 		}
 	}
 	return

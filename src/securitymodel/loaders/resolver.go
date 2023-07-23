@@ -1,20 +1,20 @@
 package loaders
 
 import (
+	"addb"
 	"errors"
-	"libaddb"
-	"libsm/objmodel"
-	"libsm/yamlmodel"
+	"securitymodel/objmodel"
+	"securitymodel/yamlmodel"
 	"strings"
 )
 
-func (t *Builder) ResolveYaml(id string, basePath string, addb *libaddb.ADDB) (interface{}, []error) {
-	t.init() // Initialize if not done already
+func (t *Builder) ResolveYaml(id string, basePath string, addb *addb.ADDB) (interface{}, []error) {
+	t.init()                                   // Initialize if not done already
 	if _, exists := t.yamlIndex[id]; !exists { // yaml hasn't been indexed yet
 		if strings.HasPrefix(id, "addb:") { // if entity is from ADDB
 			yamlObj, errs := t.readandIndexYamlFromADDB(id, addb)
 			if yamlObj == nil {
-				errs = append(errs, errors.New("Entity '" + id + "' not found in ADDB"))
+				errs = append(errs, errors.New("Entity '"+id+"' not found in ADDB"))
 				return nil, errs
 			}
 			return yamlObj, nil
@@ -22,7 +22,7 @@ func (t *Builder) ResolveYaml(id string, basePath string, addb *libaddb.ADDB) (i
 			return nil, []error{errors.New("Entity '" + id + "' not found in model or ADDB")}
 		}
 	}
-	
+
 	return t.yamlIndex[id], nil
 }
 
@@ -38,7 +38,7 @@ func (t *Builder) Resolve(id string) (interface{}, []error) {
 		// Build object, index it and return the built object.
 		obj, errs := t.buildObjectFromYaml(yamlObj)
 		if obj == nil {
-			errs = append(errs, errors.New("unknown error when building object from yaml for '" + id + "'"))
+			errs = append(errs, errors.New("unknown error when building object from yaml for '"+id+"'"))
 		}
 		t.objectIndex[id] = obj
 		return obj, errs
@@ -49,7 +49,7 @@ func (t *Builder) Resolve(id string) (interface{}, []error) {
 
 func (t *Builder) buildObjectFromYaml(yamlObj interface{}) (interface{}, []error) {
 	if ent, ok := yamlObj.(*yamlmodel.Entity); ok {
-		switch (ent.Type) {
+		switch ent.Type {
 		case yamlmodel.Human:
 			var h objmodel.Human
 			errs := h.Init(ent, t.Resolve)

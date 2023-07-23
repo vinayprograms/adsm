@@ -5,8 +5,8 @@ import (
 	"libadm/graph"
 	admloaders "libadm/loaders"
 	"libadm/model"
-	"libsm/objmodel"
 	"os"
+	"securitymodel/objmodel"
 )
 
 func GenerateSMDiagram(model objmodel.SecurityModel) ([]string, error) {
@@ -26,7 +26,7 @@ func GenerateExternalEntityCode(id string, ext objmodel.ExternalSpec) string {
 func GenerateEntityCode(id string, entity objmodel.EntitySpec) string {
 	riskyEntityProperties := " style=\"rounded\" shape=\"record\" fontname=\"Arial\" color=\"red\" penwidth=\"2\"];"
 	safeEntityProperties := " style=\"rounded\" shape=\"record\" fontname=\"Arial\"];"
-	
+
 	extraA := 0
 	extraD := 0
 	extraM := 0
@@ -41,7 +41,7 @@ func GenerateEntityCode(id string, entity objmodel.EntitySpec) string {
 		}
 	}
 	a, d, m, r, hasRisks := getStatsForEntity(entity)
-	label := "{" + wrap(entity.GetName()) + "} | {A: " + fmt.Sprint(a + extraA) + "| D: " + fmt.Sprint(d + extraD) + "| M: " + fmt.Sprint(m + extraM) + "| R: " + fmt.Sprint(r + extraR) + "}"
+	label := "{" + wrap(entity.GetName()) + "} | {A: " + fmt.Sprint(a+extraA) + "| D: " + fmt.Sprint(d+extraD) + "| M: " + fmt.Sprint(m+extraM) + "| R: " + fmt.Sprint(r+extraR) + "}"
 	if hasRisks {
 		return GenerateID(id) + "[label=\"" + label + "}\" " + riskyEntityProperties
 	} else {
@@ -56,26 +56,34 @@ func GenerateFlowCode(flow objmodel.FlowSpec, externalIDs []string) string {
 
 	a, d, m, r, hasRisks := getStatsForFlow(flow)
 	label := "<<b>" + htmlwrap(flow.GetName()) + "</b><br/>A: " + fmt.Sprint(a) + " | D: " + fmt.Sprint(d) + " | M: " + fmt.Sprint(m) + " | R: " + fmt.Sprint(r) + ">"
-	
+
 	sender := flow.GetSender()
-	if sender == nil { return "" }
+	if sender == nil {
+		return ""
+	}
 	senderID := sender.GetID()
-	if senderID == "" { return ""}
+	if senderID == "" {
+		return ""
+	}
 	senderID = GenerateID(senderID)
-	
+
 	receiver := flow.GetReceiver()
-	if receiver == nil { return "" }
+	if receiver == nil {
+		return ""
+	}
 	receiverID := receiver.GetID()
-	if receiverID == "" { return "" }
+	if receiverID == "" {
+		return ""
+	}
 	receiverID = GenerateID(receiverID)
-	
+
 	// flow from external entity, into the system
 	if contains(senderID, externalIDs) {
-		return senderID +  " -> " +  receiverID + "[label=" + label + " " + externalFlowProperties + "]"
+		return senderID + " -> " + receiverID + "[label=" + label + " " + externalFlowProperties + "]"
 	} else if hasRisks {
-		return senderID +  " -> " +  receiverID + "[label=" + label + " " + riskyFlowProperties + "]"
+		return senderID + " -> " + receiverID + "[label=" + label + " " + riskyFlowProperties + "]"
 	} else {
-		return senderID +  " -> " +  receiverID + "[label=" + label + " " + safeFlowProperties + "]"
+		return senderID + " -> " + receiverID + "[label=" + label + " " + safeFlowProperties + "]"
 	}
 }
 
@@ -93,12 +101,14 @@ func generateHeader() (header []string) {
 
 // Add all items from the Security model and their flows.
 func generateBody(model objmodel.SecurityModel) (body []string) {
-	
+
 	// Add externals
 	body = appendLine(body, 1, "//externals")
 	var externIDs []string
 	for id, ext := range model.Externals {
-		if id == "" || ext == nil { continue }
+		if id == "" || ext == nil {
+			continue
+		}
 		externIDs = append(externIDs, GenerateID(id))
 		body = appendLine(body, 1, GenerateExternalEntityCode(GenerateID(id), ext))
 	}
@@ -106,11 +116,13 @@ func generateBody(model objmodel.SecurityModel) (body []string) {
 
 	// Add entities
 	body = appendLine(body, 1, "//entities")
-	body = appendLine(body, 1, "subgraph cluster_" + GenerateID(model.Title) + "{")
+	body = appendLine(body, 1, "subgraph cluster_"+GenerateID(model.Title)+"{")
 	graphProperties := " style=\"filled, rounded, dashed\" rankdir=\"LR\" splines=\"true\" overlap=\"false\" nodesep=\"0.5\" ranksep=\"0.5\" fontname=\"Arial\" fontcolor=\"black\"  fillcolor=\"transparent\"  color=\"red\"];"
-	body = appendLine(body, 2, "graph[label=<<b>" + htmlwrap(model.Title) + "</b>>" + graphProperties)
+	body = appendLine(body, 2, "graph[label=<<b>"+htmlwrap(model.Title)+"</b>>"+graphProperties)
 	for id, entity := range model.Entities {
-		if id == "" || entity == nil { continue }
+		if id == "" || entity == nil {
+			continue
+		}
 		if _, ok := entity.(*objmodel.Role); ok {
 			continue // Role data will be consolidated into the entity that uses it.
 		}
@@ -123,7 +135,9 @@ func generateBody(model objmodel.SecurityModel) (body []string) {
 	// Add flows
 	body = appendLine(body, 1, "//flows")
 	for _, flow := range model.Flows {
-		if flow == nil { continue }
+		if flow == nil {
+			continue
+		}
 		body = appendLine(body, 1, GenerateFlowCode(flow, externIDs))
 	}
 
@@ -151,33 +165,33 @@ func getStats(allADM map[string][]string) (attacks int, defenses int, hasUnmitig
 	for _, admList := range allADM {
 		for _, admFile := range admList {
 			contents, err := os.ReadFile(admFile)
-			if err != nil { 
-				fmt.Println(err.Error()) 
+			if err != nil {
+				fmt.Println(err.Error())
 				continue
 			}
 			if len(contents) == 0 { //no contents
 				fmt.Println("No ADM content found in " + admFile)
 				continue
 			}
-			
+
 			gherkinModel, err := admloaders.LoadGherkinContent(string(contents))
-			if err != nil { 
-				fmt.Println(err) 
+			if err != nil {
+				fmt.Println(err)
 				continue
 			}
-			
+
 			var m model.Model
 			err = m.Init(gherkinModel.Feature)
-			if err != nil { 
-				fmt.Println(err) 
+			if err != nil {
+				fmt.Println(err)
 				continue
 			}
 			attacks += len(m.Attacks)
 			defenses += len(m.Defenses)
 
 			err = graph.AddModel(&m)
-			if err != nil { 
-				fmt.Println(err) 
+			if err != nil {
+				fmt.Println(err)
 				continue
 			}
 		}
@@ -199,11 +213,11 @@ func getStatsForEntity(m objmodel.EntitySpec) (attacks int, defenses int, mitiga
 	for _, recos := range m.GetRecommendations() {
 		recommendationsCount += len(recos)
 	}
-	return 
+	return
 }
 
 // Generate statistics for a flow
-func getStatsForFlow(f objmodel.FlowSpec) (attacks int, defenses int,  mitigationsCount int, recommendationsCount int,  hasOpenRisks bool) {
+func getStatsForFlow(f objmodel.FlowSpec) (attacks int, defenses int, mitigationsCount int, recommendationsCount int, hasOpenRisks bool) {
 	attacks, defenses, hasOpenRisks = getStats(f.GetADM())
 	mitigationsCount = 0
 	recommendationsCount = 0
@@ -213,5 +227,5 @@ func getStatsForFlow(f objmodel.FlowSpec) (attacks int, defenses int,  mitigatio
 	for _, recos := range f.GetRecommendations() {
 		recommendationsCount += len(recos)
 	}
-	return 
+	return
 }

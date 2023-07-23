@@ -1,14 +1,14 @@
 package loaders
 
 import (
+	"addb"
 	"errors"
-	"libaddb"
-	"libsm/objmodel"
-	"libsm/yamlmodel"
+	"securitymodel/objmodel"
+	"securitymodel/yamlmodel"
 	"strings"
 )
 
-func (b *Builder) Index(id string, obj interface{}, admDir string, addb *libaddb.ADDB) (errs []error) {
+func (b *Builder) Index(id string, obj interface{}, admDir string, addb *addb.ADDB) (errs []error) {
 	b.init() // Initialize if not done already
 
 	switch x := obj.(type) {
@@ -50,18 +50,24 @@ func (b *Builder) Index(id string, obj interface{}, admDir string, addb *libaddb
 ////////////////////////////////////////
 // internal functions
 
-func (b *Builder) indexModelParts(m *yamlmodel.SecurityModel, admDir string, addb *libaddb.ADDB) (errors []error) {
-	// Index all YAML entities from model first. 
+func (b *Builder) indexModelParts(m *yamlmodel.SecurityModel, admDir string, addb *addb.ADDB) (errors []error) {
+	// Index all YAML entities from model first.
 	for _, obj := range m.Externals {
-		if obj == nil || obj.Id == "" { continue }
+		if obj == nil || obj.Id == "" {
+			continue
+		}
 		b.yamlIndex[obj.Id] = obj
 	}
-	for _, obj := range m.Entities { 
-		if obj == nil || obj.Id == "" { continue }
+	for _, obj := range m.Entities {
+		if obj == nil || obj.Id == "" {
+			continue
+		}
 		b.yamlIndex[obj.Id] = obj
 	}
-	for _, obj := range m.Flows { 
-		if obj == nil || obj.Id == "" { continue }
+	for _, obj := range m.Flows {
+		if obj == nil || obj.Id == "" {
+			continue
+		}
 		b.yamlIndex[obj.Id] = obj
 	}
 
@@ -70,17 +76,23 @@ func (b *Builder) indexModelParts(m *yamlmodel.SecurityModel, admDir string, add
 	// Index parts of each entity. This is required by resolver later
 	// to find yaml objects that are referred in other places in the doc.
 	for _, obj := range m.Externals {
-		if obj == nil || obj.Id == "" { continue }
+		if obj == nil || obj.Id == "" {
+			continue
+		}
 		errs := b.indexEntityParts(obj.Id, admDir, addb, obj)
 		errors = append(errors, errs...)
 	}
-	for _, obj := range m.Entities { 
-		if obj == nil || obj.Id == "" { continue }
-		errs := b.indexEntityParts(obj.Id, admDir, addb, obj) 
+	for _, obj := range m.Entities {
+		if obj == nil || obj.Id == "" {
+			continue
+		}
+		errs := b.indexEntityParts(obj.Id, admDir, addb, obj)
 		errors = append(errors, errs...)
 	}
 	for _, obj := range m.Flows {
-		if obj == nil || obj.Id == "" { continue }
+		if obj == nil || obj.Id == "" {
+			continue
+		}
 		errs := b.indexFlowParts(obj.Id, admDir, addb, obj)
 		errors = append(errors, errs...)
 	}
@@ -88,43 +100,53 @@ func (b *Builder) indexModelParts(m *yamlmodel.SecurityModel, admDir string, add
 	return errors
 }
 
-func (b *Builder) indexEntityParts(id string, basePath string, addb *libaddb.ADDB, entity *yamlmodel.Entity) []error {
+func (b *Builder) indexEntityParts(id string, basePath string, addb *addb.ADDB, entity *yamlmodel.Entity) []error {
 	var allErrors []error
 
 	entity.AdmDir = basePath
 
 	// Index members that refer to other model objects
-	if entity.Base != nil && len(entity.Base) > 0 { 
+	if entity.Base != nil && len(entity.Base) > 0 {
 		for _, base := range entity.Base {
 			_, err := b.ResolveYaml(base, basePath, addb)
-			if err != nil { allErrors = append(allErrors, err...) }
+			if err != nil {
+				allErrors = append(allErrors, err...)
+			}
 		}
 	}
 	if entity.Interface != "" {
 		_, err := b.ResolveYaml(entity.Interface, basePath, addb)
-		if err != nil { allErrors = append(allErrors, err...) }
+		if err != nil {
+			allErrors = append(allErrors, err...)
+		}
 	}
 	if len(entity.Roles) > 0 {
 		for _, role := range entity.Roles {
-			if role != "" { 
+			if role != "" {
 				_, err := b.ResolveYaml(role, basePath, addb)
-				if err != nil { allErrors = append(allErrors, err...) }
+				if err != nil {
+					allErrors = append(allErrors, err...)
+				}
 			}
 		}
 	}
 	if len(entity.Languages) > 0 {
 		for _, lang := range entity.Languages {
-			if lang != "" { 
+			if lang != "" {
 				_, err := b.ResolveYaml(lang, basePath, addb)
-				if err != nil { allErrors = append(allErrors, err...) }
+				if err != nil {
+					allErrors = append(allErrors, err...)
+				}
 			}
 		}
 	}
 	if len(entity.Dependencies) > 0 {
 		for _, dep := range entity.Dependencies {
-			if dep != "" { 
+			if dep != "" {
 				_, err := b.ResolveYaml(dep, basePath, addb)
-				if err != nil { allErrors = append(allErrors, err...) }
+				if err != nil {
+					allErrors = append(allErrors, err...)
+				}
 			}
 		}
 	}
@@ -136,25 +158,31 @@ func (b *Builder) indexEntityParts(id string, basePath string, addb *libaddb.ADD
 	}
 }
 
-func (b *Builder) indexFlowParts(id string, basePath string, addb *libaddb.ADDB, flow *yamlmodel.Flow) []error {
+func (b *Builder) indexFlowParts(id string, basePath string, addb *addb.ADDB, flow *yamlmodel.Flow) []error {
 	var allErrors []error
 
 	flow.AdmDir = basePath
 
 	// Index members that refer to other model objects
-	if flow.Sender != "" { 
+	if flow.Sender != "" {
 		_, err := b.ResolveYaml(flow.Sender, basePath, addb)
-		if err != nil { allErrors = append(allErrors, err...) }
+		if err != nil {
+			allErrors = append(allErrors, err...)
+		}
 	}
 	if flow.Receiver != "" {
 		_, err := b.ResolveYaml(flow.Receiver, basePath, addb)
-		if err != nil { allErrors = append(allErrors, err...) }
+		if err != nil {
+			allErrors = append(allErrors, err...)
+		}
 	}
 	if len(flow.Protocol) > 0 {
 		for _, proto := range flow.Protocol {
-			if proto != "" { 
+			if proto != "" {
 				_, err := b.ResolveYaml(proto, basePath, addb)
-				if err != nil { allErrors = append(allErrors, err...) }
+				if err != nil {
+					allErrors = append(allErrors, err...)
+				}
 			}
 		}
 	}
@@ -166,7 +194,7 @@ func (b *Builder) indexFlowParts(id string, basePath string, addb *libaddb.ADDB,
 	}
 }
 
-func (b *Builder) readandIndexYamlFromADDB(id string, addb *libaddb.ADDB) (interface{}, []error) {
+func (b *Builder) readandIndexYamlFromADDB(id string, addb *addb.ADDB) (interface{}, []error) {
 	component, err := addb.GetComponent(id)
 	if err != nil {
 		return nil, nil
@@ -175,15 +203,15 @@ func (b *Builder) readandIndexYamlFromADDB(id string, addb *libaddb.ADDB) (inter
 	switch strings.ToLower(string(component.Type)) {
 	case "human", "program", "system":
 		entity, err := b.translateADDBComponentToEntity(component)
-		if err != nil { 
+		if err != nil {
 			return nil, nil
 		}
 		errs := b.Index(id, entity, "", addb)
 		return entity, errs
 	case "flow":
 		flow, err := b.translateADDBComponentToFlow(component)
-		if err != nil { 
-			return nil, nil 
+		if err != nil {
+			return nil, nil
 		}
 		flow.AdmDir = addb.Location
 		errs := b.Index(id, flow, "", addb)
@@ -193,7 +221,7 @@ func (b *Builder) readandIndexYamlFromADDB(id string, addb *libaddb.ADDB) (inter
 	return nil, nil
 }
 
-func (t *Builder) translateADDBComponentToEntity(component *libaddb.ADDBComponent) (*yamlmodel.Entity, error) {
+func (t *Builder) translateADDBComponentToEntity(component *addb.ADDBComponent) (*yamlmodel.Entity, error) {
 	var entity yamlmodel.Entity
 
 	if component == nil {
@@ -203,16 +231,19 @@ func (t *Builder) translateADDBComponentToEntity(component *libaddb.ADDBComponen
 	entity.Id = component.Id
 	entity.Name = component.Name
 	switch component.Type {
-	case libaddb.Human:		entity.Type = yamlmodel.Human
-	case libaddb.Program:	entity.Type = yamlmodel.Program
-	case libaddb.System:	entity.Type = yamlmodel.System
+	case addb.Human:
+		entity.Type = yamlmodel.Human
+	case addb.Program:
+		entity.Type = yamlmodel.Program
+	case addb.System:
+		entity.Type = yamlmodel.System
 
 	}
 	entity.Description = component.Description
 	entity.Base = component.Base
 	entity.Recommendations = component.Recommendations
 	entity.ADM = component.ADM
-	
+
 	// Only for humans
 	entity.Roles = component.Roles
 	entity.Interface = component.Interface
@@ -225,7 +256,7 @@ func (t *Builder) translateADDBComponentToEntity(component *libaddb.ADDBComponen
 	return &entity, nil
 }
 
-func (db *Builder) translateADDBComponentToFlow(component *libaddb.ADDBComponent) (*yamlmodel.Flow, error) {
+func (db *Builder) translateADDBComponentToFlow(component *addb.ADDBComponent) (*yamlmodel.Flow, error) {
 	var flow yamlmodel.Flow
 
 	if component == nil {
@@ -236,7 +267,7 @@ func (db *Builder) translateADDBComponentToFlow(component *libaddb.ADDBComponent
 	flow.Name = component.Name
 	flow.Description = component.Description
 	flow.Protocol = component.Protocol
-	
+
 	// NOTE: Sender & Receiver are available for an ADDB component
 
 	flow.Recommendations = component.Recommendations

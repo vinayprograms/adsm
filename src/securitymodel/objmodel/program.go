@@ -2,22 +2,22 @@ package objmodel
 
 import (
 	"errors"
-	"libsm/yamlmodel"
 	"net/url"
+	"securitymodel/yamlmodel"
 )
 
 type Program struct {
 	CoreObject
-	base []ProgramEntitySpec
+	base           []ProgramEntitySpec
 	codeRepository string
-	roles map[string]EntitySpec
-	languages map[string]ProgramEntitySpec
-	dependencies map[string]ProgramEntitySpec
+	roles          map[string]EntitySpec
+	languages      map[string]ProgramEntitySpec
+	dependencies   map[string]ProgramEntitySpec
 }
 
 func (p *Program) Init(e *yamlmodel.Entity, r Resolver) []error {
 	var errs []error
-	
+
 	if e == nil {
 		return []error{errors.New("cannot convert nil yaml to program specification")}
 	}
@@ -27,11 +27,17 @@ func (p *Program) Init(e *yamlmodel.Entity, r Resolver) []error {
 	}
 
 	err := p.SetID(e.Id)
-	if err != nil { return []error{err} }
+	if err != nil {
+		return []error{err}
+	}
 	err = p.SetName(e.Name)
-	if err != nil { return []error{err} }
+	if err != nil {
+		return []error{err}
+	}
 	err = p.SetDescription(e.Description)
-	if err != nil { return []error{err} }
+	if err != nil {
+		return []error{err}
+	}
 
 	if e.AdmDir != "" {
 		for _, adm := range e.ADM {
@@ -59,7 +65,7 @@ func (p *Program) Init(e *yamlmodel.Entity, r Resolver) []error {
 			if b, ok := obj.(ProgramEntitySpec); ok {
 				p.AddBase(b)
 			} else {
-				errs = append(errs, errors.New("error in resolving base '" + base + "' for entity '" + p.id + "'"))
+				errs = append(errs, errors.New("error in resolving base '"+base+"' for entity '"+p.id+"'"))
 			}
 		}
 	}
@@ -71,9 +77,11 @@ func (p *Program) Init(e *yamlmodel.Entity, r Resolver) []error {
 		}
 		if rol, ok := obj.(Role); ok {
 			err := p.AddRole(role, &rol)
-			if err != nil { errs = append(errs, err)}
+			if err != nil {
+				errs = append(errs, err)
+			}
 		} else {
-			errs = append(errs, errors.New("error in resolving role '" + role + "' for entity '" + p.id + "'"))
+			errs = append(errs, errors.New("error in resolving role '"+role+"' for entity '"+p.id+"'"))
 		}
 	}
 
@@ -84,9 +92,11 @@ func (p *Program) Init(e *yamlmodel.Entity, r Resolver) []error {
 		}
 		if l, ok := obj.(*Program); ok {
 			err := p.AddLanguage(lang, l)
-			if err != nil { errs = append(errs, err)}
+			if err != nil {
+				errs = append(errs, err)
+			}
 		} else {
-			errs = append(errs, errors.New("error in resolving language '" + lang + "' for entity '" + p.id + "'"))
+			errs = append(errs, errors.New("error in resolving language '"+lang+"' for entity '"+p.id+"'"))
 		}
 	}
 
@@ -97,9 +107,11 @@ func (p *Program) Init(e *yamlmodel.Entity, r Resolver) []error {
 		}
 		if d, ok := obj.(*Program); ok {
 			err := p.AddDependency(d.id, d)
-			if err != nil { errs = append(errs, err) }
+			if err != nil {
+				errs = append(errs, err)
+			}
 		} else {
-			errs = append(errs, errors.New("error in resolving dependency '" + dep + "' for entity '" + p.id + "'"))
+			errs = append(errs, errors.New("error in resolving dependency '"+dep+"' for entity '"+p.id+"'"))
 		}
 	}
 
@@ -112,22 +124,22 @@ func (p *Program) GetADM() (allADM map[string][]string) {
 	allADM[p.id] = p.adm
 	if p.base != nil && len(p.base) > 0 {
 		for _, base := range p.base {
-			allADM = merge(allADM, p.id + ".base", base.GetADM())
+			allADM = merge(allADM, p.id+".base", base.GetADM())
 		}
 	}
 	if p.roles != nil {
 		for _, r := range p.roles {
-			allADM = merge(allADM, p.id + ".roles", r.GetADM())
+			allADM = merge(allADM, p.id+".roles", r.GetADM())
 		}
 	}
 	if p.dependencies != nil {
 		for _, d := range p.dependencies {
-			allADM = merge(allADM, p.id + ".dependencies", d.GetADM())
+			allADM = merge(allADM, p.id+".dependencies", d.GetADM())
 		}
 	}
 	if p.languages != nil {
 		for _, l := range p.languages {
-			allADM = merge(allADM, p.id + ".languages", l.GetADM())
+			allADM = merge(allADM, p.id+".languages", l.GetADM())
 		}
 	}
 
@@ -144,12 +156,12 @@ func (p *Program) GetMitigations() map[string][]string {
 	if len(p.mitigations) > 0 {
 		allMitigations[p.GetName()] = append(allMitigations[p.GetName()], p.mitigations...)
 	}
-	
+
 	if p.base != nil && len(p.base) > 0 {
 		for _, base := range p.base {
 			for key, mitigations := range base.GetMitigations() {
 				if len(mitigations) > 0 {
-					allMitigations[p.GetName() + " -> (Base)" + base.GetName() + ":" + key] = append(allMitigations[p.GetName() + " -> (Base)" + base.GetName() + ":" + key], mitigations...)
+					allMitigations[p.GetName()+" -> (Base)"+base.GetName()+":"+key] = append(allMitigations[p.GetName()+" -> (Base)"+base.GetName()+":"+key], mitigations...)
 				}
 			}
 		}
@@ -158,7 +170,7 @@ func (p *Program) GetMitigations() map[string][]string {
 		for _, role := range p.roles {
 			for key, mitigations := range role.GetMitigations() {
 				if len(mitigations) > 0 {
-					allMitigations[p.GetName() + " -> Role:" + key] = append(allMitigations[p.GetName() + " -> Role:" + key], mitigations...)
+					allMitigations[p.GetName()+" -> Role:"+key] = append(allMitigations[p.GetName()+" -> Role:"+key], mitigations...)
 				}
 			}
 		}
@@ -167,7 +179,7 @@ func (p *Program) GetMitigations() map[string][]string {
 		for _, lang := range p.languages {
 			for key, mitigations := range lang.GetMitigations() {
 				if len(mitigations) > 0 {
-					allMitigations[p.GetName() + " -> Language:" + key] = append(allMitigations[p.GetName() + " -> Language:" + key], mitigations...)
+					allMitigations[p.GetName()+" -> Language:"+key] = append(allMitigations[p.GetName()+" -> Language:"+key], mitigations...)
 				}
 			}
 		}
@@ -176,12 +188,12 @@ func (p *Program) GetMitigations() map[string][]string {
 		for _, dep := range p.dependencies {
 			for key, mitigations := range dep.GetMitigations() {
 				if len(mitigations) > 0 {
-					allMitigations[p.GetName() + " -> Dependency:" + key] = append(allMitigations[p.GetName() + " -> Dependency:" + key], mitigations...)
+					allMitigations[p.GetName()+" -> Dependency:"+key] = append(allMitigations[p.GetName()+" -> Dependency:"+key], mitigations...)
 				}
 			}
 		}
 	}
-	
+
 	return allMitigations
 }
 
@@ -190,12 +202,12 @@ func (p *Program) GetRecommendations() map[string][]string {
 	if len(p.recommendations) > 0 {
 		allRecommendations[p.GetName()] = append(allRecommendations[p.GetName()], p.recommendations...)
 	}
-	
+
 	if p.base != nil && len(p.base) > 0 {
 		for _, base := range p.base {
 			for key, recos := range base.GetRecommendations() {
 				if len(recos) > 0 {
-					allRecommendations[p.GetName() + " -> (Base)" + base.GetName() + ":" + key] = append(allRecommendations[p.GetName() + " -> (Base)" + base.GetName() + ":" + key], recos...)
+					allRecommendations[p.GetName()+" -> (Base)"+base.GetName()+":"+key] = append(allRecommendations[p.GetName()+" -> (Base)"+base.GetName()+":"+key], recos...)
 				}
 			}
 		}
@@ -204,7 +216,7 @@ func (p *Program) GetRecommendations() map[string][]string {
 		for _, role := range p.roles {
 			for key, recos := range role.GetRecommendations() {
 				if len(recos) > 0 {
-					allRecommendations[p.GetName() + " -> Role:" + key] = append(allRecommendations[p.GetName() + " -> Role:" + key], recos...)
+					allRecommendations[p.GetName()+" -> Role:"+key] = append(allRecommendations[p.GetName()+" -> Role:"+key], recos...)
 				}
 			}
 		}
@@ -213,7 +225,7 @@ func (p *Program) GetRecommendations() map[string][]string {
 		for _, lang := range p.languages {
 			for key, recos := range lang.GetRecommendations() {
 				if len(recos) > 0 {
-					allRecommendations[p.GetName() + " -> Language:" + key] = append(allRecommendations[p.GetName() + " -> Language:" + key], recos...)
+					allRecommendations[p.GetName()+" -> Language:"+key] = append(allRecommendations[p.GetName()+" -> Language:"+key], recos...)
 				}
 			}
 		}
@@ -222,12 +234,12 @@ func (p *Program) GetRecommendations() map[string][]string {
 		for _, dep := range p.dependencies {
 			for key, recos := range dep.GetRecommendations() {
 				if len(recos) > 0 {
-					allRecommendations[p.GetName() + " -> Dependency:" + key] = append(allRecommendations[p.GetName() + " -> Dependency:" + key], recos...)
+					allRecommendations[p.GetName()+" -> Dependency:"+key] = append(allRecommendations[p.GetName()+" -> Dependency:"+key], recos...)
 				}
 			}
 		}
 	}
-	
+
 	return allRecommendations
 }
 
@@ -246,7 +258,9 @@ func (p *Program) GetRoles() map[string]EntitySpec {
 }
 
 func (p *Program) AddRole(id string, role EntitySpec) error {
-	if p.roles == nil { p.roles = make(map[string]EntitySpec) }
+	if p.roles == nil {
+		p.roles = make(map[string]EntitySpec)
+	}
 	if _, present := p.roles[id]; present {
 		return errors.New("Role '" + id + "' is already part of roles list for '" + p.id + "'")
 	} else {
@@ -259,7 +273,7 @@ func (p *Program) GetCodeRepository() string {
 	return p.codeRepository
 }
 
-func (p *Program) SetRepository(urlString string)	error {
+func (p *Program) SetRepository(urlString string) error {
 	_, err := url.Parse(urlString)
 	if err != nil {
 		return err
@@ -286,8 +300,10 @@ func (p *Program) GetLanguages() map[string]ProgramEntitySpec {
 	return p.languages
 }
 
-func (p* Program) AddLanguage(id string, language ProgramEntitySpec) error {
-	if p.languages == nil { p.languages = make(map[string]ProgramEntitySpec) }
+func (p *Program) AddLanguage(id string, language ProgramEntitySpec) error {
+	if p.languages == nil {
+		p.languages = make(map[string]ProgramEntitySpec)
+	}
 	if _, present := p.languages[id]; present {
 		return errors.New("Language '" + id + "' is already listed for entity '" + p.id + "'")
 	} else {
@@ -301,8 +317,10 @@ func (p *Program) GetDependencies() map[string]ProgramEntitySpec {
 	return p.dependencies
 }
 
-func (p* Program) AddDependency(id string, dependency ProgramEntitySpec) error {
-	if p.dependencies == nil { p.dependencies = make(map[string]ProgramEntitySpec) }
+func (p *Program) AddDependency(id string, dependency ProgramEntitySpec) error {
+	if p.dependencies == nil {
+		p.dependencies = make(map[string]ProgramEntitySpec)
+	}
 	if _, present := p.dependencies[id]; present {
 		return errors.New("Dependency '" + id + "' is already listed for entity '" + p.id + "'")
 	} else {

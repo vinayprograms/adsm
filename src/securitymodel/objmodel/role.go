@@ -2,7 +2,7 @@ package objmodel
 
 import (
 	"errors"
-	"libsm/yamlmodel"
+	"securitymodel/yamlmodel"
 )
 
 type Role struct {
@@ -11,7 +11,7 @@ type Role struct {
 
 func (rol *Role) Init(e *yamlmodel.Entity, r Resolver) []error {
 	var errs []error
-	
+
 	if e == nil {
 		return []error{errors.New("cannot convert nil yaml to role specification")}
 	}
@@ -21,11 +21,17 @@ func (rol *Role) Init(e *yamlmodel.Entity, r Resolver) []error {
 	}
 
 	err := rol.SetID(e.Id)
-	if err != nil { return []error{err} }
+	if err != nil {
+		return []error{err}
+	}
 	err = rol.SetName(e.Name)
-	if err != nil { return []error{err} }
+	if err != nil {
+		return []error{err}
+	}
 	err = rol.SetDescription(e.Description)
-	if err != nil { return []error{err} }
+	if err != nil {
+		return []error{err}
+	}
 
 	if e.AdmDir != "" {
 		for _, adm := range e.ADM {
@@ -57,7 +63,7 @@ func (rol *Role) AddADM(adm string) error {
 func (rol *Role) GetMitigations() map[string][]string {
 	allMitigations := make(map[string][]string)
 	if len(rol.mitigations) > 0 {
-		allMitigations[rol.GetName()] = append(allMitigations[rol.GetName()], rol.mitigations...)	
+		allMitigations[rol.GetName()] = append(allMitigations[rol.GetName()], rol.mitigations...)
 	}
 	return allMitigations
 }
@@ -65,7 +71,7 @@ func (rol *Role) GetMitigations() map[string][]string {
 func (rol *Role) GetRecommendations() map[string][]string {
 	allRecommendations := make(map[string][]string)
 	if len(rol.recommendations) > 0 {
-		allRecommendations[rol.GetName()] = append(allRecommendations[rol.GetName()], rol.recommendations...)	
+		allRecommendations[rol.GetName()] = append(allRecommendations[rol.GetName()], rol.recommendations...)
 	}
 	return allRecommendations
 }

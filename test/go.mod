@@ -4,9 +4,9 @@ go 1.18
 
 replace args => ../src/args
 
-replace libsm => ../src/libsm
+replace securitymodel => ../src/securitymodel
 
-replace libaddb => ../src/libaddb
+replace addb => ../src/addb
 
 replace libadm => ../../adm/src/libadm
 
@@ -14,7 +14,7 @@ require (
 	args v0.0.0-00010101000000-000000000000
 	github.com/stretchr/testify v1.8.1
 	libadm v0.0.0-00010101000000-000000000000
-	libsm v0.0.0-00010101000000-000000000000
+	securitymodel v0.0.0-00010101000000-000000000000
 )
 
 require (
@@ -29,5 +29,5 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	golang.org/x/image v0.5.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	libaddb v0.0.0-00010101000000-000000000000 // indirect
+	addb v0.0.0-00010101000000-000000000000 // indirect
 )

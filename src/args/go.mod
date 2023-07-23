@@ -2,16 +2,16 @@ module args
 
 go 1.19
 
-replace libsm => ../libsm
+replace securitymodel => ../securitymodel
 
 replace libadm => ../../../adm/src/libadm
 
-replace libaddb => ../libaddb
+replace addb => ../addb
 
 require (
 	github.com/goccy/go-graphviz v0.1.0
 	libadm v0.0.0-00010101000000-000000000000
-	libsm v0.0.0-00010101000000-000000000000
+	securitymodel v0.0.0-00010101000000-000000000000
 )
 
 require (
@@ -23,5 +23,5 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	golang.org/x/image v0.5.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	libaddb v0.0.0-00010101000000-000000000000 // indirect
+	addb v0.0.0-00010101000000-000000000000 // indirect
 )

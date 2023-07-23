@@ -4,9 +4,9 @@ go 1.19
 
 replace args => ../args
 
-replace libsm => ../libsm
+replace securitymodel => ../securitymodel
 
-replace libaddb => ../libaddb
+replace addb => ../addb
 
 replace libadm => ../../../adm/src/libadm
 
@@ -22,7 +22,7 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	golang.org/x/image v0.5.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	libaddb v0.0.0-00010101000000-000000000000 // indirect
+	addb v0.0.0-00010101000000-000000000000 // indirect
 	libadm v0.0.0-00010101000000-000000000000 // indirect
-	libsm v0.0.0-00010101000000-000000000000 // indirect
+	securitymodel v0.0.0-00010101000000-000000000000 // indirect
 )

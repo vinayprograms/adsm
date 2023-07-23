@@ -2,12 +2,12 @@ package objmodel
 
 import (
 	"errors"
-	"libsm/yamlmodel"
+	"securitymodel/yamlmodel"
 )
 
 type Human struct {
 	CoreObject
-	base []HumanEntitySpec
+	base          []HumanEntitySpec
 	userInterface ProgramSpec
 }
 
@@ -23,11 +23,17 @@ func (h *Human) Init(e *yamlmodel.Entity, r Resolver) []error {
 	}
 
 	err := h.SetID(e.Id)
-	if err != nil { return []error{err} }
+	if err != nil {
+		return []error{err}
+	}
 	err = h.SetName(e.Name)
-	if err != nil { return []error{err} }
+	if err != nil {
+		return []error{err}
+	}
 	err = h.SetDescription(e.Description)
-	if err != nil { return []error{err} }
+	if err != nil {
+		return []error{err}
+	}
 
 	if e.AdmDir != "" {
 		for _, adm := range e.ADM {
@@ -50,11 +56,11 @@ func (h *Human) Init(e *yamlmodel.Entity, r Resolver) []error {
 			if b, ok := obj.(HumanEntitySpec); ok {
 				h.AddBase(b)
 			} else {
-				errs = append(errs, errors.New("error in resolving base '" + base + "' for human '" + h.id + "'"))
+				errs = append(errs, errors.New("error in resolving base '"+base+"' for human '"+h.id+"'"))
 			}
 		}
 	}
-	
+
 	if e.Interface != "" {
 		obj, ifaceErrs := r(e.Interface)
 		if len(ifaceErrs) != 0 {
@@ -63,7 +69,7 @@ func (h *Human) Init(e *yamlmodel.Entity, r Resolver) []error {
 		if iface, ok := obj.(ProgramEntitySpec); ok {
 			h.SetUserInterface(iface)
 		} else {
-			errs = append(errs, errors.New("error in resolving interface '" + e.Interface + "' for human '" + h.id + "'"))
+			errs = append(errs, errors.New("error in resolving interface '"+e.Interface+"' for human '"+h.id+"'"))
 		}
 	}
 
@@ -81,14 +87,14 @@ func (h *Human) GetADM() (allADM map[string][]string) {
 	allADM[h.id] = h.adm
 	if h.base != nil && len(h.base) > 0 {
 		for _, base := range h.base {
-			allADM = merge(allADM, h.id + ".base", base.GetADM())
+			allADM = merge(allADM, h.id+".base", base.GetADM())
 		}
 	}
 	if h.userInterface != nil {
 		if _, ok := h.userInterface.(EntitySpec); !ok {
 			return
 		}
-		allADM = merge(allADM, h.id + ".interface", h.userInterface.(EntitySpec).GetADM())
+		allADM = merge(allADM, h.id+".interface", h.userInterface.(EntitySpec).GetADM())
 	}
 
 	return
@@ -103,7 +109,7 @@ func (h *Human) GetMitigations() map[string][]string {
 		for _, base := range h.base {
 			for key, mitigations := range base.GetMitigations() {
 				if len(mitigations) > 0 {
-					allMitigations[h.GetName() + " -> (Base)" + base.GetName() + ":" + key] = append(allMitigations[h.GetName() + " -> (Base)" + base.GetName() + ":" + key], mitigations...)
+					allMitigations[h.GetName()+" -> (Base)"+base.GetName()+":"+key] = append(allMitigations[h.GetName()+" -> (Base)"+base.GetName()+":"+key], mitigations...)
 				}
 			}
 		}
@@ -120,7 +126,7 @@ func (h *Human) GetRecommendations() map[string][]string {
 		for _, base := range h.base {
 			for key, recos := range base.GetRecommendations() {
 				if len(recos) > 0 {
-					allRecommendations[h.GetName() + " -> (Base)" + base.GetName() + ":" + key] = append(allRecommendations[h.GetName() + " -> (Base)" + base.GetName() + ":" + key], recos...)
+					allRecommendations[h.GetName()+" -> (Base)"+base.GetName()+":"+key] = append(allRecommendations[h.GetName()+" -> (Base)"+base.GetName()+":"+key], recos...)
 				}
 			}
 		}

@@ -2,19 +2,19 @@ package test
 
 import (
 	"errors"
-	"libsm/objmodel"
-	"libsm/yamlmodel"
+	"securitymodel/objmodel"
+	"securitymodel/yamlmodel"
 )
 
 type TestHarness struct {
-	YamlStructures map[string]interface{}	// YAML structures store for use with 'Resolve' function
+	YamlStructures map[string]interface{} // YAML structures store for use with 'Resolve' function
 }
 
 // Resolve function that will be used for testing 'objmodel' entities.
 func (t *TestHarness) Resolve(id string) (interface{}, []error) {
 	if value, exists := t.YamlStructures[id]; exists {
 		if ent, ok := value.(*yamlmodel.Entity); ok {
-			switch (ent.Type) {
+			switch ent.Type {
 			case yamlmodel.Human:
 				var h objmodel.Human
 				errs := h.Init(ent, t.Resolve)

@@ -3,9 +3,9 @@ package loaders
 import (
 	"errors"
 
-	"libaddb"
-	"libsm/objmodel"
-	"libsm/yamlmodel"
+	"addb"
+	"securitymodel/objmodel"
+	"securitymodel/yamlmodel"
 
 	"gopkg.in/yaml.v3"
 )
@@ -16,7 +16,7 @@ type Loader struct {
 
 func (l *Loader) LoadSecurityModel(yamlText string, admDir string) (*objmodel.SecurityModel, []error) {
 	var errs []error
-	
+
 	if yamlText == "" {
 		return nil, []error{errors.New("cannot work with empty YAML content")}
 	}
@@ -27,7 +27,7 @@ func (l *Loader) LoadSecurityModel(yamlText string, admDir string) (*objmodel.Se
 		return nil, []error{err}
 	}
 
-	var addb libaddb.ADDB
+	var addb addb.ADDB
 	err = addb.Init(m.AddbUri)
 	if err != nil {
 		errs = append(errs, err)
@@ -39,7 +39,7 @@ func (l *Loader) LoadSecurityModel(yamlText string, admDir string) (*objmodel.Se
 	}
 
 	m.AdmDir = admDir
-	
+
 	var model objmodel.SecurityModel
 	initErrs := model.Init(&m, l.builder.Resolve)
 	if len(initErrs) != 0 {
@@ -51,7 +51,7 @@ func (l *Loader) LoadSecurityModel(yamlText string, admDir string) (*objmodel.Se
 
 func (l *Loader) LoadHuman(yamlText string, admDir string, addbUrl string) (*objmodel.Human, []error) {
 	var errs []error
-	
+
 	if yamlText == "" {
 		return nil, []error{errors.New("cannot work with empty YAML content")}
 	}
@@ -66,15 +66,15 @@ func (l *Loader) LoadHuman(yamlText string, admDir string, addbUrl string) (*obj
 		return nil, []error{errors.New("Expected human, got " + string(h.Type))}
 	}
 
-	var addb libaddb.ADDB
+	var addb addb.ADDB
 	err = addb.Init(addbUrl)
 	if err != nil {
 		errs = append(errs, err)
 	}
-	
+
 	// Index entity and its parts
 	idxErrs := l.builder.Index(h.Id, &h, admDir, &addb)
-	if len(idxErrs) != 0 { 
+	if len(idxErrs) != 0 {
 		errs = append(errs, idxErrs...)
 	}
 
@@ -104,15 +104,15 @@ func (l *Loader) LoadProgram(yamlText string, admDir string, addbUrl string) (*o
 		return nil, []error{errors.New("Expected program, got " + string(p.Type))}
 	}
 
-	var addb libaddb.ADDB
+	var addb addb.ADDB
 	err = addb.Init(addbUrl)
 	if err != nil {
 		errs = append(errs, err)
 	}
 
 	// Index entity and its parts
-	idxErrs := l.builder.Index(p.Id, &p,  admDir, &addb)
-	if idxErrs != nil { 
+	idxErrs := l.builder.Index(p.Id, &p, admDir, &addb)
+	if idxErrs != nil {
 		errs = append(errs, idxErrs...)
 	}
 
@@ -138,15 +138,15 @@ func (l *Loader) LoadFlow(yamlText string, admDir string, addbUrl string) (*objm
 		return nil, []error{err}
 	}
 
-	var addb libaddb.ADDB
+	var addb addb.ADDB
 	err = addb.Init(addbUrl)
 	if err != nil {
 		errs = append(errs, err)
 	}
 
 	// Index entity and its parts
-	idxErrs := l.builder.Index(f.Id, &f,  admDir, &addb)
-	if len(idxErrs) != 0 { 
+	idxErrs := l.builder.Index(f.Id, &f, admDir, &addb)
+	if len(idxErrs) != 0 {
 		errs = append(errs, idxErrs...)
 	}
 
