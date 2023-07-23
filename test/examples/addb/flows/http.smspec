@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/vinayprograms/adsm/main/schemas/component-schema.json
+
+---
+id: flow.http
+name: HTTP
+description: Security specifications for HTTP protocol
+type: flow
+adm: []
+recommendations:
+  - Ensure that both communicating parties authenticate each other before sending sensitive data. Authentication can involve client keys, SSO or digital certificates.
+  - Ensure all requests and responses are logged.
+  - Force same-origin policy when transmitting data to client.
+  # Logging
+  - Logs should include client identifier (ID, IP address, etc.), user agent (if applicable), HTTP method and status code, host URL/endpoint, HTTP GET query parameters, request size, unique ID of the request(if applicable), referrer (if applicable) and time of request.
+...

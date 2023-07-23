@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/vinayprograms/adsm/main/schemas/component-schema.json
+
+---
+id: lang.sql
+name: SQL
+description: Security recommendations for SQL
+type: program
+adm: []
+recommendations:
+  - |
+    SQL clients should sanitize all inputs before building queries. 
+    Sanitization involves replacing harmful symbols, those that have syntactic meaning in SQL with associated escape characters.
+  - |
+    SQL was created for humans. DB API are for programs. 
+    Use ORM / Entity Frameworks from your specific programming language to directly load and filter DB data, instead of using SQL queries. 
+    If ORM is not possible, use prepared-statements instead of plain SQL query strings.
+    All major programming languages have packages/libraries to help create prepared-statements.
+...

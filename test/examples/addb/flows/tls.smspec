@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/vinayprograms/adsm/main/schemas/component-schema.json
+---
+id: flow.tls
+name: TLS
+description: Security recommendations for TLS
+type: flow
+protocol: []
+adm: ["adm/tls.adm"]
+recommendations:
+  - Avoid weak ciphers
+  - Ensure key TLS negotiation decisions are logged.
+...

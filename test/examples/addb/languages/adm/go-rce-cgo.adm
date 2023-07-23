@@ -1,0 +1,15 @@
+Model: CVE-2021-3115 - Go RCE using PATH variable in Windows
+  Assumption: All Go programs use cgo package
+    Given cgo is a standard package
+    And cgo is used in all core packages of Go
+    And Go program is compiled on Windows
+    
+    @CVE-2021-3115
+    Attack: Include malicious GCC executable in C module
+      When Go program pulls untrusted module that uses cgo
+      Then include a malicious 'gcc.exe' executable file in the module 
+    
+    @CVE-2021-3115
+    Defense: Run newer versions of Go (>= v1.14.15 or >= v1.15.8)
+      When calls are being made to one or more core packages
+      Then ensure that you are running Go versions >= v1.14.15 or >= v1.15.8

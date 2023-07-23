@@ -1,0 +1,61 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/vinayprograms/adsm/main/schemas/component-schema.json
+
+---
+id: db.server
+name: Database Server
+description: Base specifications for database servers
+type: program
+repo: nil
+languages: []
+adm: []
+recommendations:
+  # DB Engine
+  - Use built-in encryption support provided by DB to secure data at-rest.
+  - Never expose DB directly to end-users or Internet.
+  - DB should expose two interfaces - SQL and DB API. SQL should only be used by admins and analysts. API is for programs.
+  - DB API that accept SQL query strings should not be used by applications to access data.
+  # Connections
+  - You should not store credentials in connection strings.
+  - Use TLS for all connections if database supports it.
+  # User management
+  - Each unique program accessing this database should get a separate DB account.
+  - DB access-control should be per-table. Don't give a blanket "all tables" access to any user account.
+  - Don't use default credentials supplied by DB.
+  - Each administrator should get their own DB account. This helps with accountability and forensic analysis. These accounts must be restricted to interactive use only.  
+  - |
+    If there are multiple admins, break up DB privileges into smaller subsets where possible. 
+    For example, a subset of admins are only allowed to manage databases and associated user accounts while another subset is only allowed backup and archival privileges. 
+    This helps separate privileged operations and increases the effort required for an attacker to gain full access to the database.
+  - Use separate accounts for interactive interfaces (like SQL clients) and API.
+  - Enforce SSO and other multi-factor authentication standards for interactive accounts.
+  - Use non-username-password authentication mechanisms for API.
+  - Enforce table level C.R.U.D. rights on all accounts.
+  - Use separate "reader" and "writer" accounts. Even if an application/service requires full C.R.U.D. rights, separating accounts based on specific operations forces applications to use more than one credential to complete its task.
+  - Evaluate whether an account requires "Delete" rights. It is a good design practice to not delete any records, especially if the DB is transactional.
+  # SQL Queries
+  - Avoid direct access to tables and built-in SQL functions. Instead use views and stored-procedures to access data.
+  - Instead of executing SQL procedures on DB, use stored procedures. These procedures should sanitize all inputs before using them in queries.
+  - Ensure stored procedures sanitize their inputs i.e., replace symbols in input strings with associated escape chararacters.
+  - |
+    DB views can also be used for access control. 
+    For example, two views on the same table can be created, one for regular user and another for admins, both with different filter parameters. 
+    This also helps avoid reading some of the filter parameters from input / SQL query.
+  # Logging
+  - All key decisions made by the DB server should be logged. This helps with forensic analysis in case of a breach.
+  - Make sure logging system is configured to not store any data from the database. This help avoid data leakage (specifically PII).
+  - Never allow log modification.
+  # Backups & failures
+  - |
+    Make sure DB Server and its storage is set up to handle peak traffic and large request spikes. 
+    This helps when DoS attacks end up impacting traffic to databases.
+    If you are using honeypots to handle DoS attacks, include a database too in the honeypot to help deflect the attack.
+  - |
+    Database backups should be secured as much as (or more than) the primary database.
+    Attackers always take the path of least resistance. 
+    They can target DB backups when they cannot gain access to primary DB. 
+    Make sure access control rules for backups are stricter than those used in production. 
+    For example, backups can be configured to be accessible only to a sub-set of admins only.
+  - |
+    Make sure DBs always span across availability zones and if possible across geographical regions.
+    This helps mitigate impact of singular or smaller scale failures.
+...

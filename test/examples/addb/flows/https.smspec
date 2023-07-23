@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/vinayprograms/adsm/main/schemas/component-schema.json
+
+---
+id: flow.https
+name: HTTPS
+description: Security recommendations for HTTPS
+type: flow
+protocol:
+  - addb:flow.http
+  - addb:flow.tls
+adm: []
+recommendations:
+  - Use HSTS (HTTP Strict Transport Security) to enforce HTTPS for all connections
+...

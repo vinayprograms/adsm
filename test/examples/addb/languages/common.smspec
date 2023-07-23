@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/vinayprograms/adsm/main/schemas/component-schema.json
+
+---
+id: lang.common
+name: Common recommendations
+description: Common recommendations for all programming languages
+type: program
+adm: []
+recommendations:
+  # Input sanitization
+  - Maintain an allowlist of domains when processing input strings that contain URIs. Uncontrolled URIs can lead to XSS (Cross Site Scripting) vulnerabilities.
+  - |
+    If you use string inputs to calculate file paths, make sure you sanitize them to avoid path-traversal attacks. 
+    One way to do this is to look for `./`, `../` or presence of common shell environment variables (like `$HOME`) in input strings.
+  - When string inputs are used to calculate file paths, make sure spaces are escaped appropriately to avoid truncation of file paths, which enables file-traversal attacks.

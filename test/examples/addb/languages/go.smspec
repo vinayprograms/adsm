@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/vinayprograms/adsm/main/schemas/component-schema.json
+
+---
+id: lang.go
+name: Go
+description: Security specifications for Go programming language
+type: program
+adm: [adm/go/go-rce-cgo.adm]
+dependencies: [addb:lang.common]
+recommendations:
+  # Source: 8 security best practices for Go devs
+  # Link: https://snyk.io/wp-content/uploads/8-security-best-practices-for-Go-developers.pdf
+  - Use go standard [crypto](https://pkg.go.dev/crypto) packages
+  - Protect users from cross-site scripting (XSS) attacks by automatically encoding web content using the [html/template](https://pkg.go.dev/html/template) rather than simply outputting plain text, as the `text/template` package would do.
+  - Avoid spawning a shell from code. If you absolutely have to do it, sanitize all inputs before using it in the shell / sub-shell.
+  - Avoid `unsafe` and `cgo` packages, as they permit developers to break out of Go's type-safety restrictions and their use could potentially enable attackers to break Go's memory safety.
+  - Use reflection sparingly. Reflection can be a powerful tool, but with Go's typing and interface system, it should be rarely used as it can easily cause unexpected problems.
+  - In containers, utilize Go's static binding capabilities in conjunction with minimal base images to reduce the effective filesystem to a minimum.
+  - When building SQL statements or URLs, sanitize input to avoid remote code execution. Alternately, instead of using `database/sql`, use `github.com/jmoiron/sqlx` for DB operations. SQLx performs input sanitization before building queries.
+
+  # Source: https://spacetime.dev/encrypting-secrets-in-memory
+  - When storing keys in memory, use libraries like [memguard](https://github.com/awnumar/memguard) to encrypt them in memory. This helps mitigate memory scanning and analysis tools used by attackers.
+
+  # Dependency management
+  - Verify source URL when importing packages directly from github or other online repositories. Use tools like [chainjacking](https://github.com/Checkmarx/chainjacking) to scan all your sources for such risks.
+  - Always use latest, patched version of external libraries.
+  - Scan all dependencies using tools like Snyk or GitHub's Dependabot to identify CVEs that may lead to vulnerabilities in your program.
+...

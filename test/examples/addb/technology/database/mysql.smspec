@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/vinayprograms/adsm/main/schemas/component-schema.json
+
+---
+id: db.mysql
+name: MySQL Database
+description: Security recommendations for MySQL
+type: program
+base: [addb:db.server]
+languages: []
+adm: []
+...

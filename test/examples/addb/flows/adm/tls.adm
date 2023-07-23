@@ -1,0 +1,18 @@
+Model: TLS security
+
+  Attack: Exploit insecure TLS ciphers
+    Given Target supports TLS v1.0 or v1.1
+    When Target is scanned for insecure ciphers
+    Then Insecure ciphers are exploited by attackers
+    And sensitive in-transit data is exposed to attackers
+
+  Defense: Take target off public internet
+    When Target is scanned for insecure ciphers
+    And target is not required to be exposed to Internet
+    Then block all access to target from Internet
+
+  Defense: Turn off insecure ciphers
+    Given Target supports TLS v1.0 or v1.1
+    When Target is scanned for insecure ciphers
+    And TLS v1.0 and v1.1 cannot be turned off
+    Then configure target to not support insecure ciphers from these versions of TLS
