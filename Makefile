@@ -48,7 +48,7 @@ report: # Coverage report (after `make tests`)
 
 clean: # Clean all build/test artifacts.
 	@printf "Removing build/test artifacts..."
-	@rm $(BIN_DIR)/$(BINARY)
-	@rm $(TEST_PATH)/tests.test
-	@rmdir $(BIN_DIR)
+	@if [[ -f $(BIN_DIR)/$(BINARY) ]]; then rm $(BIN_DIR)/$(BINARY); fi
+	@if [[ -f $(TEST_PATH)/tests.test ]]; then rm $(TEST_PATH)/tests.test; fi
+	@if [[ -d $(BIN_DIR) ]]; then rmdir $(BIN_DIR); fi
 	@printf "DONE\n"
