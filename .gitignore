@@ -1,0 +1,17 @@
+.DS_Store
+pkg
+go.sum
+go.work
+bin
+*.log
+*.test
+.vscode
+
+export
+export/attacks
+export/defenses
+*.dot
+*.sm.md
+*.png
+*.attack
+*.feature
