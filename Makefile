@@ -15,7 +15,7 @@ TEST_PACKAGES := "args,securitymodel/loaders,securitymodel/yamlmodel,securitymod
 help: # Show this help
 	@egrep -h '\s#\s' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?# "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
-all: tests build clean
+all: tests build
 
 build: # Build program
 	@printf "Checking if %s directory exists..." $(BIN_DIR)
