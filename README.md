@@ -1,6 +1,6 @@
 # ADSM - [ADM](https://github.com/vinayprograms/adm) based Security Modeling
 
-This is a CLI tool that processes `.smspec` files written using [smspec YAML schema](smspec.md).
+This is a CLI tool that processes `.smspec` files written using [smspec YAML schema](SMSPEC.md).
 
 This tool can -
 
