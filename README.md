@@ -132,4 +132,6 @@ The report (and associated diagram) is written to a `/report` folder in the curr
 
 ## ADDB
 
-Security model entities / flows can be reused by adding them to a *Attack-Defense Database*. This is a git repository containing entity specifications along with its ADM files. See [ADDB](ADDB.md) for more details.
+Security model entities / flows can be reused by adding them to a *Attack-Defense Database*. This is a git repository containing entity specifications along with its ADM files. See [ADDB](ADDB.md) to learn more.
+
+[securitydesign/addb](https://github.com/securitydesign/addb) contains entries for open source projects and other publicly available information.
