@@ -10,8 +10,6 @@ import (
 	"securitymodel/diagram"
 	"securitymodel/objmodel"
 	"strings"
-
-	"github.com/goccy/go-graphviz"
 )
 
 type generateReportCommand struct {
@@ -34,7 +32,6 @@ func (g generateReportCommand) execute() error {
 
 	// export security model diagram (used in report)
 	generateSmCommand{model: g.model, outputpath: outpath + "resources"}.execute()
-	exportPNG(outpath + "resources/" + diagram.GenerateID(g.model.Title))
 
 	// export ADM (linked to in report)
 	generateAdmCommand{model: g.model, outputpath: outpath + "resources"}.execute()
@@ -44,32 +41,6 @@ func (g generateReportCommand) execute() error {
 
 ////////////////////////////////////////
 // Functions to generate report content
-
-func exportPNG(dotFilepath string) error {
-	// 1. Read 'dot' file
-	bytes, err := os.ReadFile(dotFilepath + ".sm.dot")
-	if err != nil {
-		return err
-	}
-	graph, err := graphviz.ParseBytes(bytes)
-	if err != nil {
-		return err
-	}
-
-	// 2. Write png to target
-	g := graphviz.New()
-	if err := g.RenderFilename(graph, graphviz.PNG, dotFilepath+".sm.png"); err != nil {
-		return err
-	}
-
-	// 3. Remove 'dot' file
-	err = os.Remove(dotFilepath + ".sm.dot")
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
 
 func generateReport(model objmodel.SecurityModel) (markdownLines []string) {
 	markdownLines = append(markdownLines, "# Security Report: "+model.Title)
@@ -84,7 +55,14 @@ func generateReport(model objmodel.SecurityModel) (markdownLines []string) {
 	// Security model
 	markdownLines = append(markdownLines, "## Security Model")
 	markdownLines = appendLineSpacer(markdownLines)
-	markdownLines = append(markdownLines, "![security-model](resources/"+diagram.GenerateID(model.Title)+".sm.png)")
+	markdownLines = append(markdownLines,
+		"The ADSM Graph is available as a [graphviz file]("+
+			"resources/"+diagram.GenerateID(model.Title)+".sm.dot). "+
+			"Please use a graphviz viewer or use [graphviz CLI tool](https://graphviz.org/download/) "+
+			"to export it to an image format of your choice. "+
+			"In case of CLI tool use `dot -Tpng resources/"+diagram.GenerateID(model.Title)+".sm.dot` "+
+			"to generate a PNG image of the graph. "+
+			"Detailed user documentation for CLI tool is available [here](https://graphviz.org/doc/info/command.html).")
 	markdownLines = appendLineSpacer(markdownLines)
 	markdownLines = append(markdownLines,
 		"The Attack-Defense Graph for this model is available as a [graphviz file]("+
