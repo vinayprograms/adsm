@@ -29,7 +29,7 @@ func (db *ADDB) Init(addb_path string) error {
 	addb_path = strings.TrimSuffix(addb_path, "/") // Remove trailing slash
 
 	if _, err := os.Stat(addb_path); os.IsNotExist(err) {
-		return errors.New("invalid ADDB path or directory not present")
+		return errors.New("\"" + addb_path + "\" is an invalid ADDB path or the directory not present")
 	}
 	db.Location = addb_path
 
