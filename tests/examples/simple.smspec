@@ -3,7 +3,7 @@
 ---
 design-document: "AnInvalidPath.md"
 title: Simple Design
-addb: ~/addb
+addb: ./addb
 
 externals:
   - id: user

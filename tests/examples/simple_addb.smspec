@@ -3,7 +3,7 @@
 ---
 design-document: "AnInvalidPath.md"
 title: Sample security model
-addb: "~/addb"
+addb: "./addb"
 adm: ["adm/simple-addb.adm"]
 
 externals:
