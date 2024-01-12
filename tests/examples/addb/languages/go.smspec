@@ -5,7 +5,7 @@ id: lang.go
 name: Go
 description: Security specifications for Go programming language
 type: program
-adm: [adm/go/go-rce-cgo.adm]
+adm: [adm/go-rce-cgo.adm]
 dependencies: [addb:lang.common]
 recommendations:
   # Source: 8 security best practices for Go devs

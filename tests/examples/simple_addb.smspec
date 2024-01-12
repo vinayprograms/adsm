@@ -54,7 +54,7 @@ entities:
     name: Database
     description: Database used by business-logic to persist important data
     repo: nil
-    base: [addb:mysql]
+    base: [addb:db.mysql]
     languages: [addb:lang.sql]
     adm: ["adm/db.adm"]
 
