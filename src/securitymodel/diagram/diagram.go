@@ -197,7 +197,7 @@ func getStats(allADM map[string][]string) (attacks int, defenses int, hasUnmitig
 		}
 	}
 
-	hasUnmitigatedAttacks = len(graph.AttackerWinsPredecessors) > 0
+	hasUnmitigatedAttacks = len(graph.UnmitigatedAttacks) > 0
 
 	return
 }

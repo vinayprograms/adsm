@@ -258,7 +258,7 @@ func generateRisksSection(model objmodel.SecurityModel) (markdownLines []string)
 			}
 		}
 	}
-	for risk := range graph.AttackerWinsPredecessors {
+	for risk := range graph.UnmitigatedAttacks {
 		if attackMap[risk] == nil {
 			// CAUTION: This line should never be reached. If it does, contact author.
 			fmt.Println("ERROR: Cannot find attack - '" + risk + "' among all attacks listed for this security model.")
